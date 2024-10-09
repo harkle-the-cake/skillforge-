@@ -4,7 +4,11 @@ const app = require('../server'); // Importiere deine Express-App
 const sequelize = require('../config/db'); // Datenbankverbindung
 const jwt = require('jsonwebtoken');
 // Stelle sicher, dass das User-Modell importiert wird
+
 const User = require('../models/User');
+const Class = require('../models/Class');
+const Equipment = require('../models/Equipment');
+
 const bcrypt = require('bcrypt');
 
 const secretKey = process.env.JWT_SECRET;
@@ -27,6 +31,18 @@ describe('User API', () => {
           role: 'Azubi',
         });
         console.log('Erstellter Benutzer:', user);  // Zeige den erstellten Benutzer an
+
+        // Klassen erstellen
+        await Class.bulkCreate([
+            { className: 'Netzwerk-Novize', level: 3, xp: 120, userId: user.id },
+            { className: 'Datenbank-Meister', level: 2, xp: 80, userId: user.id },
+        ]);
+
+        // Ausrüstungsgegenstände erstellen
+        await Equipment.bulkCreate([
+            { itemName: 'Anfänger-Rüstung', userId: user.id },
+            { itemName: 'Schwert des Wissens', userId: user.id },
+        ]);
   };
 
   beforeAll(async () => {
@@ -99,14 +115,14 @@ try {
 
 
   // Test für das Aktualisieren von XP
-  it('should update user XP', async () => {
+  it('should update user Gold', async () => {
     const res = await request(app)
-      .put(`/api/users/${userId}/xp`)  // XP aktualisieren
-      .send({ xp: 100 })  // Sende neue XP
+      .put(`/api/users/${userId}/gold`)  // XP aktualisieren
+      .send({ gold: 100 })  // Sende neue XP
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.statusCode).toEqual(200);  // Überprüfe den Statuscode
-    expect(res.body.xp).toBe(100);  // XP sollten aktualisiert worden sein
+    expect(res.body.gold).toBe(100);  // XP sollten aktualisiert worden sein
   });
 
   // Test für das Ändern des Benutzer-Avatars

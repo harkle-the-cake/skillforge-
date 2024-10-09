@@ -24,17 +24,9 @@ const User = sequelize.define('User', {
         isIn: [[ROLES.AZUBI, ROLES.AUSBILDER]], // Validierung mit den konstanten Werten
       },
   },
-  xp: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0
-  },
-  level: {
-    type: DataTypes.INTEGER,
-    defaultValue: 1
-  },
-  points: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0
+  gold: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0, // Startet mit 0 Gold
   },
   avatar: {
     type: DataTypes.STRING,
