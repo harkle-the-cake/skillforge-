@@ -12,7 +12,7 @@ const app = express();
 
 // Erlaube Anfragen von 'http://localhost:3000'
 app.use(cors({
-  origin: 'http://localhost:3000', // Erlaube dein Frontend
+  origin: '*', // Erlaube dein Frontend
   methods: '*', // Erlaubt alle HTTP-Methoden
   allowedHeaders: '*', // Erlaubt alle Header
   credentials: true // Wenn Anmeldeinformationen wie Cookies oder HTTP-Header verwendet werden
