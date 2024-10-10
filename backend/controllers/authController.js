@@ -8,14 +8,14 @@ const INSTRUCTOR_TOKEN = process.env.INSTRUCTOR_TOKEN;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 exports.register = async (req, res) => {
-  const { username, password, role, instructorToken } = req.body;
+  const { username, password, role, trainerToken } = req.body;
 
   try {
     // Überprüfe, ob der Benutzer die Rolle "Ausbilder" wählt
     if (role === 'Ausbilder') {
       // Wenn das Token nicht übereinstimmt, lehne die Registrierung ab
-      if (instructorToken !== INSTRUCTOR_TOKEN) {
-        console.error('Fehler bei der Registrierung, gesendeted Ausbilder-Token ist falsch:', instructorToken);
+      if (trainerToken !== INSTRUCTOR_TOKEN) {
+        console.error('Fehler bei der Registrierung, gesendeted Ausbilder-Token ist falsch:', trainerToken);
         return res.status(403).json({ error: 'Ungültiges Ausbilder-Token' });
       }
     }
