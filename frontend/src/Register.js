@@ -11,7 +11,7 @@ const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('Azubi');
-  const [trainerToken, setTrainerToken] = useState('');
+  const [registrationToken, setRegistrationToken] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
@@ -22,7 +22,7 @@ const Register = () => {
         username,
         password,
         role,
-        trainerToken: role === 'Ausbilder' ? trainerToken : undefined,
+        registrationToken
       });
 
       const token = res.data.token;
@@ -101,18 +101,16 @@ const Register = () => {
             <MenuItem value="Ausbilder">Ausbilder</MenuItem>
           </TextField>
 
-          {role === 'Ausbilder' && (
-            <TextField
-              label="Ausbilder-Token"
+          <TextField
+              label="Token"
               variant="outlined"
               fullWidth
               margin="normal"
-              value={trainerToken}
-              onChange={(e) => setTrainerToken(e.target.value)}
+              value={registrationToken}
+              onChange={(e) => setRegistrationToken(e.target.value)}
               required
               InputProps={{ style: { color: '#fff' } }}
-            />
-          )}
+          />
 
           <Button type="submit" variant="contained" color="primary" fullWidth style={{ marginTop: '20px' }}>
             Registrieren

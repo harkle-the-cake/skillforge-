@@ -5,19 +5,26 @@ const User = require('../models/User');
 
 // Hier holen wir das geheime Token für Ausbilder aus den Umgebungsvariablen
 const INSTRUCTOR_TOKEN = process.env.INSTRUCTOR_TOKEN;
+const TRAINEE_TOKEN = process.env.TRAINEE_TOKEN;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 exports.register = async (req, res) => {
-  const { username, password, role, trainerToken } = req.body;
-
+  const { username, password, role, registrationToken } = req.body;
   try {
     // Überprüfe, ob der Benutzer die Rolle "Ausbilder" wählt
+
     if (role === 'Ausbilder') {
-      // Wenn das Token nicht übereinstimmt, lehne die Registrierung ab
-      if (trainerToken !== INSTRUCTOR_TOKEN) {
-        console.error('Fehler bei der Registrierung, gesendeted Ausbilder-Token ist falsch:', trainerToken);
-        return res.status(403).json({ error: 'Ungültiges Ausbilder-Token' });
-      }
+        // Überprüfe das Ausbilder-Token
+        if (registrationToken !== INSTRUCTOR_TOKEN) {
+          return res.status(403).json({ error: 'Ungültiges Ausbilder-Token' });
+        }
+    } else if (role === 'Azubi') {
+        // Überprüfe das Azubi-Token
+        if (registrationToken !== TRAINEE_TOKEN) {
+          return res.status(403).json({ error: 'Ungültiges Azubi-Token' });
+        }
+    } else {
+        return res.status(403).json({ error: 'Ungültiger Rolle, kein Token für diese Rolle' });
     }
 
     // Passwort hashen
