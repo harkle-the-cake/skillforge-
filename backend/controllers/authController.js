@@ -15,6 +15,7 @@ exports.register = async (req, res) => {
     if (role === 'Ausbilder') {
       // Wenn das Token nicht übereinstimmt, lehne die Registrierung ab
       if (instructorToken !== INSTRUCTOR_TOKEN) {
+        console.error('Fehler bei der Registrierung, gesendeted Ausbilder-Token ist falsch:', instructorToken);
         return res.status(403).json({ error: 'Ungültiges Ausbilder-Token' });
       }
     }
