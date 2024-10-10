@@ -22,8 +22,16 @@ else
   exit 1
 fi
 
+# Tag the Docker image
+if docker tag $ARTIFACT.$ARCH:latest $REPO_ADDRESS/$ARTIFACT.$ARCH:latest; then
+  echo "Docker tag with latest successful."
+else
+  echo "Docker tag failed."
+  exit 1
+fi
+
 # Push the Docker image
-if docker push $REPO_ADDRESS/$ARTIFACT.$ARCH:$VERSION; then
+if docker push $REPO_ADDRESS/$ARTIFACT.$ARCH:latest; then
   echo "Docker push successful."
 else
   echo "Docker push failed."
