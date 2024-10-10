@@ -14,14 +14,6 @@ else
   exit 1
 fi
 
-# Build the Docker image
-if docker build -t $ARTIFACT.$ARCH:latest ./; then
-  echo "Docker build successful."
-else
-  echo "Docker build failed."
-  exit 1
-fi
-
 # Tag the Docker image
 if docker tag $ARTIFACT.$ARCH:$VERSION $REPO_ADDRESS/$ARTIFACT.$ARCH:$VERSION; then
   echo "Docker tag with $VERSION successful."
@@ -31,7 +23,7 @@ else
 fi
 
 # Tag the Docker image
-if docker tag $ARTIFACT.$ARCH:latest $REPO_ADDRESS/$ARTIFACT.$ARCH:latest; then
+if docker tag $ARTIFACT.$ARCH:$VERSION $REPO_ADDRESS/$ARTIFACT.$ARCH:latest; then
   echo "Docker tag with latest successful."
 else
   echo "Docker tag failed."
