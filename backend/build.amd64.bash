@@ -4,10 +4,19 @@ VERSION=$(jq -r '.version' package.json)
 REPO_ADDRESS=192.168.180.223:5000
 ARCH=amd64
 
+
 echo "creating docker with $VERSION..."
 
 # Build the Docker image
 if docker build -t $ARTIFACT.$ARCH:$VERSION ./; then
+  echo "Docker build successful."
+else
+  echo "Docker build failed."
+  exit 1
+fi
+
+# Build the Docker image
+if docker build -t $ARTIFACT.$ARCH:latest ./; then
   echo "Docker build successful."
 else
   echo "Docker build failed."
