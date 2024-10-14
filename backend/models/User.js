@@ -34,32 +34,10 @@ const User = sequelize.define('User', {
   }
 });
 
+// Assoziationen (Falls noch nicht vorhanden)
+const Class = require('./Class'); // Falls 'Class' existiert
 
-// Funktion, die eine Transaktion um eine Aktion herum erstellt
-const createUserWithTransaction = async (userData) => {
-  const transaction = await sequelize.transaction();  // Transaktion starten
+User.belongsToMany(Class, { through: 'UserClasses' }); // N:N Beziehung zu Classes
 
-  try {
-    const newUser = await User.create(userData, { transaction });  // Operation mit Transaktion
-    await transaction.commit();  // Commit der Transaktion
-    return newUser;
-  } catch (error) {
-    await transaction.rollback();  // Rollback der Transaktion bei Fehler
-    throw error;
-  }
-};
-
-// Beispiel für das Löschen aller Benutzer mit Transaktion
-const deleteAllUsersWithTransaction = async () => {
-  const transaction = await sequelize.transaction();  // Transaktion starten
-
-  try {
-    await User.destroy({ where: {}, transaction });  // Alle Benutzer mit Transaktion löschen
-    await transaction.commit();  // Commit der Transaktion
-  } catch (error) {
-    await transaction.rollback();  // Rollback bei Fehler
-    throw error;
-  }
-};
 
 module.exports = User;

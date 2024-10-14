@@ -28,7 +28,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 // Statische Dateien aus dem Ordner "public" bereitstellen
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
-app.use('/api/azubis', azubiRoutes); // Binde die Azubi-Routen unter /api ein
+app.use('/api/azubis', azubiRoutes);
 app.use('/api/class', classRoutes);
 
 // Verbindung zur DB herstellen und Server starten (nur in der Laufzeit, nicht in den Tests)

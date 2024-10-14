@@ -8,7 +8,7 @@ exports.getClasses = async (req, res) => {
     const classes = await Class.findAll({
       include: {
         model: Level,
-        include: [Boss],
+        include: [EndBoss],
       },
     });
     res.json(classes);
@@ -18,21 +18,75 @@ exports.getClasses = async (req, res) => {
   }
 };
 
+// Klasse anlegen (nur Ausbilder)
 exports.createClass = async (req, res) => {
   try {
     const { className, levels } = req.body;
-    const newClass = await Class.create({ className });
 
-    // Levels erstellen und mit der Klasse verbinden
-    if (levels && levels.length > 0) {
-      for (const level of levels) {
-        await Level.create({ ...level, ClassId: newClass.id });
-      }
+    const classItem = await Class.create({ className });
+
+    for (const level of levels) {
+      const boss = level.bossId ? await Boss.findByPk(level.bossId) : null;
+      await Level.create({
+        ...level,
+        ClassId: classItem.id,
+        BossId: boss ? boss.id : null,
+      });
     }
 
-    res.status(201).json(newClass);
+    res.status(201).json(classItem);
   } catch (error) {
-    console.error('Fehler beim Erstellen der Klasse:', error);
-    res.status(500).json({ error: 'Fehler beim Erstellen der Klasse' });
+    console.error('Fehler beim Anlegen der Klasse:', error);
+    res.status(500).json({ error: 'Fehler beim Anlegen der Klasse' });
+  }
+};
+
+// Klasse löschen (nur Ausbilder)
+exports.deleteClass = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const classItem = await Class.findByPk(id);
+
+    if (!classItem) {
+      return res.status(404).json({ error: 'Klasse nicht gefunden' });
+    }
+
+    await classItem.destroy();
+    res.json({ message: 'Klasse erfolgreich gelöscht' });
+  } catch (error) {
+    console.error('Fehler beim Löschen der Klasse:', error);
+    res.status(500).json({ error: 'Fehler beim Löschen der Klasse' });
+  }
+};
+
+// Klasse aktualisieren (nur Ausbilder)
+exports.updateClass = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { className, levels } = req.body;
+
+    const classItem = await Class.findByPk(id);
+    if (!classItem) {
+      return res.status(404).json({ error: 'Klasse nicht gefunden' });
+    }
+
+    classItem.className = className || classItem.className;
+    await classItem.save();
+
+    // Levels aktualisieren
+    for (const level of levels) {
+      const boss = level.bossId ? await Boss.findByPk(level.bossId) : null;
+      await Level.update({
+        ...level,
+        BossId: boss ? boss.id : null,
+      }, {
+        where: { id: level.id },
+      });
+    }
+
+    res.json({ message: 'Klasse erfolgreich aktualisiert' });
+  } catch (error) {
+    console.error('Fehler beim Aktualisieren der Klasse:', error);
+    res.status(500).json({ error: 'Fehler beim Aktualisieren der Klasse' });
   }
 };

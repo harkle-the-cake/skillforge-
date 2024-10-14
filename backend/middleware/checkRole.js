@@ -16,6 +16,7 @@ const checkRole = (role) => {
       }
       next(); // Wenn die Rolle korrekt ist, weiter zur nächsten Middleware oder Route
     } catch (error) {
+      console.error( 'Ungültiges Token', error)
       return res.status(403).json({ error: 'Ungültiges Token' });
     }
   };

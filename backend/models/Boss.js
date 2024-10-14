@@ -1,6 +1,7 @@
 // models/EndBoss.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
+const Level = require('./Level');
 
 const Boss = sequelize.define('Boss', {
   name: {
@@ -20,5 +21,7 @@ const Boss = sequelize.define('Boss', {
     allowNull: true,
   },
 });
+
+Boss.belongsTo(Level); // Ein Level gehört zu einer Klasse
 
 module.exports = Boss;

@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const Class = require('../models/Class');
-const bcrypt = require('bcrypt');
 const Equipment = require('../models/Equipment');
+const bcrypt = require('bcrypt');
 
 // Azubis abrufen
 exports.getAzubis = async (req, res) => {

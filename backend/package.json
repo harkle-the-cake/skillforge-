@@ -3,7 +3,7 @@
   "version": "1.0.3",
   "main": "server.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "start": "node server.js"
   },
   "keywords": [],
