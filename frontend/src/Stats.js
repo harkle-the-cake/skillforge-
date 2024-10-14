@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Container, Typography, Grid, Paper, Box } from '@mui/material';
+import { useParams } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import useTokenCheck from './useTokenCheck'; // Importiere die Token-Check-Funktion
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const IMAGE_URL = API_URL + "/images/";
 
 const Stats = () => {
 
   useTokenCheck(); // Token auf Gültigkeit prüfen
 
+  const { id } = useParams(); // Optionale ID aus der URL
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,9 +20,28 @@ const Stats = () => {
   const token = localStorage.getItem('authToken'); // Token aus dem localStorage holen
 
   useEffect(() => {
-    const fetchUserStats = async () => {
+    // Funktion, um die ID aus dem JWT zu extrahieren
+    const extractIdFromToken = (token) => {
       try {
-        const res = await axios.get(`${API_URL}/api/users/me`, {
+        const decodedToken = jwtDecode(token); // Token dekodieren
+        return decodedToken.id; // ID aus dem Token extrahieren
+      } catch (err) {
+        console.error('Fehler beim Dekodieren des Tokens:', err);
+        return null;
+      }
+    };
+
+    const fetchUserStats = async () => {
+      const userId = id || extractIdFromToken(token); // Verwende die ID aus der URL oder extrahiere sie aus dem Token
+
+      if (!userId) {
+        setError('Ungültige Benutzer-ID.');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await axios.get(`${API_URL}/api/azubis/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -32,7 +55,7 @@ const Stats = () => {
     };
 
     fetchUserStats();
-  }, [token]);
+  }, [id, token]);
 
   if (loading) {
     return <Typography>Laden...</Typography>;
@@ -49,7 +72,7 @@ const Stats = () => {
         <Grid item xs={12} md={4}>
           <Box textAlign="center">
             <img
-              src={API_URL + userData.avatar}
+              src={IMAGE_URL + userData.avatar}
               alt="Avatar"
               style={{ borderRadius: '50%', width: '150px', height: '150px' }}
             />
@@ -63,7 +86,7 @@ const Stats = () => {
               <Typography variant="h4">{userData.username}</Typography>
               <Box display="flex" alignItems="center">
                 <img
-                  src="/images/gold_icon.png" // Pfad zum Gold-Icon
+                  src="/icons/gold_icon.png" // Pfad zum Gold-Icon
                   alt="Gold Icon"
                   style={{ width: '50px', marginRight: '10px' }} // Größeres Icon
                 />

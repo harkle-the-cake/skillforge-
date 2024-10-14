@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import Register from './Register';
 import Login from './Login';
 import Stats from './Stats';
+import InstructorDashboard from './InstructorDashboard';
 
 function App() {
   const [token, setToken] = useState('');
@@ -41,7 +42,11 @@ function App() {
             <Routes>
               <Route path="/" element={<Login setToken={setToken} />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login setToken={setToken} />} />
               <Route path="/stats" element={<Stats token={token} />} />
+              <Route path="/azubi/:id" element={<Stats token={token}/>} />
+              {/* Nur für Ausbilder */}
+              <Route path="/instructor-dashboard" element={<InstructorDashboard token={token}/>} />
             </Routes>
           </div>
 

@@ -4,6 +4,9 @@ const cors = require('cors');
 const sequelize = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const azubiRoutes = require('./routes/azubi'); // Importiere die Routen-Datei für Azubis
+const classRoutes = require('./routes/classRoutes');
+
 const path = require('path');
 
 dotenv.config();
@@ -25,6 +28,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 // Statische Dateien aus dem Ordner "public" bereitstellen
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
+app.use('/api/azubis', azubiRoutes); // Binde die Azubi-Routen unter /api ein
+app.use('/api/class', classRoutes);
 
 // Verbindung zur DB herstellen und Server starten (nur in der Laufzeit, nicht in den Tests)
 if (process.env.NODE_ENV !== 'test') {

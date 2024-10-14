@@ -21,6 +21,8 @@ const Login = ({ setToken }) => {
         password,
       });
       const token = res.data.token;
+
+      // Token in App setzen!!!
       setToken(token);
 
       // Token in localStorage speichern
@@ -32,10 +34,11 @@ const Login = ({ setToken }) => {
       if (userRole === 'Azubi') {
         navigate('/stats');
       } else if (userRole === 'Ausbilder') {
-        navigate('/overview');
+        navigate('/instructor-dashboard'); // Ausbilder zur Übersicht
       }
     } catch (error) {
-      setMessage('Fehler beim Login.');
+      setMessage('Fehler beim Login.', error);
+      setMessage(error.toString());
     }
   };
 
