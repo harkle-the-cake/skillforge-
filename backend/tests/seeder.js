@@ -19,14 +19,23 @@ const seedUsers = async () => {
     { username: 'instructor', password: hashedPassword, role: 'Ausbilder' }
   ]);
 
-  // Generiere die JWT-Tokens für die Testbenutzer
-  const tokens = {
-    testuser1: jwt.sign({ id: users[0].id, role: users[0].role }, secretKey, { expiresIn: '1h' }),
-    testuser2: jwt.sign({ id: users[1].id, role: users[1].role }, secretKey, { expiresIn: '1h' }),
-    instructor: jwt.sign({ id: users[2].id, role: users[2].role }, secretKey, { expiresIn: '1h' })
+  // Generiere die JWT-Tokens für die Testbenutzer und die IDs
+  const tokensAndIds = {
+    testuser1: {
+      id: users[0].id, // User-ID
+      token: jwt.sign({ id: users[0].id, role: users[0].role }, secretKey, { expiresIn: '1h' })
+    },
+    testuser2: {
+      id: users[1].id, // User-ID
+      token: jwt.sign({ id: users[1].id, role: users[1].role }, secretKey, { expiresIn: '1h' })
+    },
+    instructor: {
+      id: users[2].id, // User-ID
+      token: jwt.sign({ id: users[2].id, role: users[2].role }, secretKey, { expiresIn: '1h' })
+    }
   };
 
-  return tokens;
+  return tokensAndIds; // Rückgabe der Token und der IDs
 };
 
 module.exports = { seedUsers };

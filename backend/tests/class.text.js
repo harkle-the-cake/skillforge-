@@ -13,11 +13,11 @@ describe('Class API', () => {
     try {
         // Datenbankverbindung aufbauen oder Seeder laden
         await sequelize.sync();
-        console.log('Datenbankverbindung erfolgreich aufgebaut.');
+        //console.log('Datenbankverbindung erfolgreich aufgebaut.');
         tokens = await seedUsers(); // Seed-User-Daten und Token generieren
-        console.log('User erstellt und Tokens generiert.');
+        //console.log('User erstellt und Tokens generiert.');
     } catch (error) {
-        console.error('Fehler bei der Tabellensynchronisierung:', error);
+        //console.error('Fehler bei der Tabellensynchronisierung:', error);
     }
   });
 
@@ -25,9 +25,9 @@ describe('Class API', () => {
     try {
       // Datenbankverbindung sauber schließen
       await sequelize.close();
-      console.log('Datenbankverbindung erfolgreich geschlossen.');
+      //console.log('Datenbankverbindung erfolgreich geschlossen.');
     } catch (error) {
-      console.error('Fehler beim Schließen der Datenbankverbindung:', error);
+      //console.error('Fehler beim Schließen der Datenbankverbindung:', error);
     }
   });
 
@@ -35,7 +35,7 @@ describe('Class API', () => {
   it('should create a new class (Ausbilder only)', async () => {
     const res = await request(app)
       .post('/api/classes')
-      .set('Authorization', `Bearer ${tokens.instructor}`)
+      .set('Authorization', `Bearer ${tokens.instructor.token}`)
       .send({
         className: 'Magier',
         levels: [
@@ -56,7 +56,7 @@ describe('Class API', () => {
 
     const res = await request(app)
       .post('/api/classes')
-      .set('Authorization', `Bearer ${tokens.instructor}`)
+      .set('Authorization', `Bearer ${tokens.instructor.token}`)
       .send({
         className: 'Krieger',
         levels: [
@@ -73,7 +73,7 @@ describe('Class API', () => {
     // Eine Klasse erstellen
     const classRes = await request(app)
       .post('/api/classes')
-      .set('Authorization', `Bearer ${tokens.instructor}`)
+      .set('Authorization', `Bearer ${tokens.instructor.token}`)
       .send({
         className: 'Krieger',
         levels: [
@@ -86,7 +86,7 @@ describe('Class API', () => {
     const classId = classRes.body.id;
     const deleteRes = await request(app)
       .delete(`/api/classes/${classId}`)
-      .set('Authorization', `Bearer ${tokens.instructor}`);
+      .set('Authorization', `Bearer ${tokens.instructor.token}`);
     expect(deleteRes.statusCode).toEqual(200);
     expect(deleteRes.body.message).toBe('Klasse erfolgreich gelöscht');
 
@@ -98,7 +98,7 @@ describe('Class API', () => {
   it('should deny access to non-instructors for class deletion', async () => {
     const classRes = await request(app)
       .post('/api/classes')
-      .set('Authorization', `Bearer ${tokens.testuser1}`)
+      .set('Authorization', `Bearer ${tokens.testuser1.token}`)
       .send({
         className: 'Schurke',
         levels: [
@@ -127,7 +127,7 @@ describe('Class API', () => {
   it('should update a class (Ausbilder only)', async () => {
     const classRes = await request(app)
       .post('/api/classes')
-      .set('Authorization', `Bearer ${tokens.instructor}`)
+      .set('Authorization', `Bearer ${tokens.instructor.token}`)
       .send({
         className: 'Heiler',
         levels: [
@@ -140,7 +140,7 @@ describe('Class API', () => {
 
     const updateRes = await request(app)
       .put(`/api/classes/${classId}`)
-      .set('Authorization', `Bearer ${tokens.instructor}`)
+      .set('Authorization', `Bearer ${tokens.instructor.token}`)
       .send({
         className: 'Heilermeister',
         levels: [

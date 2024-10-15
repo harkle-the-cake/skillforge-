@@ -15,7 +15,7 @@ describe('Auth API', () => {
   beforeAll(async () => {
         // Datenbankverbindung aufbauen oder Seeder laden
         await sequelize.sync();
-        console.log('Datenbankverbindung erfolgreich aufgebaut.');
+        //console.log('Datenbankverbindung erfolgreich aufgebaut.');
         tokens = await seedUsers(); // Seed-User-Daten und Token generieren
   });
 
@@ -23,9 +23,9 @@ describe('Auth API', () => {
     try {
       // Datenbankverbindung sauber schließen
       await sequelize.close();
-      console.log('Datenbankverbindung erfolgreich geschlossen.');
+      //console.log('Datenbankverbindung erfolgreich geschlossen.');
     } catch (error) {
-      console.error('Fehler beim Schließen der Datenbankverbindung:', error);
+      //console.error('Fehler beim Schließen der Datenbankverbindung:', error);
     }
   });
 
@@ -43,15 +43,11 @@ describe('Auth API', () => {
   });
 
   it('should login an existing user', async () => {
-    await sequelize.sync({ force: true })
-      .then(() => console.log('Tabellen erfolgreich synchronisiert.'))
-      .catch(err => console.error('Fehler bei der Tabellensynchronisierung:', err));
-
     // Zuerst den Benutzer erstellen
     await request(app)
       .post('/api/auth/register')
       .send({
-        username: 'testuserNeu',
+        username: 'testuserNeu1',
         password: 'password123',
         role: 'Azubi',
         registrationToken: TRAINEE_TOKEN
@@ -61,7 +57,7 @@ describe('Auth API', () => {
     const res = await request(app)
       .post('/api/auth/login')
       .send({
-        username: 'testuserNeu',
+        username: 'testuserNeu1',
         password: 'password123',
       });
     expect(res.statusCode).toEqual(200);

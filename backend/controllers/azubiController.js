@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Class = require('../models/Class');
+const ClassProgress = require('../models/ClassProgress');
 const Equipment = require('../models/Equipment');
 const bcrypt = require('bcrypt');
 
@@ -30,19 +31,13 @@ exports.getAzubi = async (req, res) => {
     }
 
     const user = await User.findByPk(userIdToFetch, {
-          attributes: ['username', 'gold', 'avatar'], // Wähle die Attribute aus, die du benötigst
-          include: [
-            {
-              model: Class, // Falls es eine separate Tabelle für Klassen gibt
-              as: 'classes',
-              attributes: ['className', 'level', 'xp'], // Attribute für jede Klasse
+          attributes: ['username', 'gold', 'avatar', 'role'], // Wähle die Attribute aus, die du benötigst
+          include: {
+            model: ClassProgress,
+            include: {
+              model: Class
             },
-            {
-              model: Equipment, // Falls es eine separate Tabelle für Ausrüstung gibt
-              as: 'equipment',
-              attributes: ['itemName'], // Name der Ausrüstung
-            },
-          ],
+          },
     });
 
     if (!user) {

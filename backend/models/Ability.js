@@ -1,8 +1,6 @@
-// models/Ability.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
-const Level = require('./Level');
-const EndBoss = require('./EndBoss');
+const Level = require('./Level'); // Importiere Level
 
 const Ability = sequelize.define('Ability', {
   title: {
@@ -10,12 +8,9 @@ const Ability = sequelize.define('Ability', {
     allowNull: false,
   },
   description: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: true,
   },
 });
-
-Ability.belongsTo(Level); // Fähigkeit gehört zu einem Level
-Ability.belongsTo(EndBoss, { foreignKey: 'endBossId', allowNull: true }); // Optional: Fähigkeit gehört zu einem Endboss
 
 module.exports = Ability;

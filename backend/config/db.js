@@ -10,9 +10,9 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
 (async () => {
   try {
     await sequelize.sync({ alter: true });
-    console.log('Tabellen erfolgreich synchronisiert');
+    // console.log('Tabellen erfolgreich synchronisiert');
   } catch (error) {
-    console.error('Fehler beim Synchronisieren der Tabellen:', error);
+    // console.error('Fehler beim Synchronisieren der Tabellen:', error);
   }
 })();
 

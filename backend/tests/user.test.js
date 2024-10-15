@@ -20,18 +20,15 @@ const userPW = 'password123';
 describe('User API', () => {
   // Variablen für Token und Benutzer-ID
   let tokens;
-  let userId;
 
   beforeAll(async () => {
       try {
         // Datenbankverbindung aufbauen oder Seeder laden
         await sequelize.sync();
-        console.log('Datenbankverbindung erfolgreich aufgebaut.');
+        //console.log('Datenbankverbindung erfolgreich aufgebaut.');
         tokens = await seedUsers(); // Seed-User-Daten und Token generieren
-        console.log('User erstellt und Tokens generiert.');
-        userId = getUserIdFromToken(tokens.testuser1);
       } catch (error) {
-        console.error('Fehler bei der Tabellensynchronisierung:', error);
+        //console.error('Fehler bei der Tabellensynchronisierung:', error);
       }
   });
 
@@ -39,7 +36,7 @@ describe('User API', () => {
     try {
       // Datenbankverbindung sauber schließen
       await sequelize.close();
-      console.log('Datenbankverbindung erfolgreich geschlossen.');
+      //console.log('Datenbankverbindung erfolgreich geschlossen.');
     } catch (error) {
       console.error('Fehler beim Schließen der Datenbankverbindung:', error);
     }
@@ -48,7 +45,7 @@ describe('User API', () => {
   it('should return 400 if userId is undefined', async () => {
       const res = await request(app)
         .get('/api/users/undefined')  // Ungültige Benutzer-ID
-        .set('Authorization', `Bearer ${tokens.testuser1}`);
+        .set('Authorization', `Bearer ${tokens.testuser1.token}`);
 
       expect(res.statusCode).toEqual(400);  // Überprüfe den 400er-Statuscode
       expect(res.body.message).toBe('Ungültige Benutzer-ID');  // Überprüfe die Fehlermeldung
@@ -56,10 +53,10 @@ describe('User API', () => {
 
   it('should get user information', async () => {
     try {
-        console.log(`Nutze USER ID HIER: ${userId}`);
+        //console.log(`Nutze USER ID HIER: ${userId}`);
         const res = await request(app)
-          .get(`/api/users/${userId}`)
-          .set('Authorization', `Bearer ${tokens.testuser1}`);
+          .get(`/api/users/${tokens.testuser1.id}`)
+          .set('Authorization', `Bearer ${tokens.testuser1.token}`);
 
         expect(res.statusCode).toEqual(200);
         expect(res.body.username).toBe(userName);
@@ -72,9 +69,9 @@ describe('User API', () => {
   // Test für das Aktualisieren von XP
   it('should update user Gold', async () => {
     const res = await request(app)
-      .put(`/api/users/${userId}/gold`)  // XP aktualisieren
+      .put(`/api/users/${tokens.testuser1.id}/gold`)  // XP aktualisieren
       .send({ gold: 100 })  // Sende neue XP
-      .set('Authorization', `Bearer ${tokens.testuser1}`);
+      .set('Authorization', `Bearer ${tokens.testuser1.token}`);
 
     expect(res.statusCode).toEqual(200);  // Überprüfe den Statuscode
     expect(res.body.gold).toBe(100);  // XP sollten aktualisiert worden sein
@@ -83,9 +80,9 @@ describe('User API', () => {
   // Test für das Ändern des Benutzer-Avatars
   it('should update user avatar', async () => {
     const res = await request(app)
-      .put(`/api/users/${userId}/avatar`)  // Avatar aktualisieren
+      .put(`/api/users/${tokens.testuser1.id}/avatar`)  // Avatar aktualisieren
       .send({ avatar: 'new_avatar.png' })  // Sende neuen Avatar
-      .set('Authorization', `Bearer ${tokens.testuser1}`);
+      .set('Authorization', `Bearer ${tokens.testuser1.token}`);
 
     expect(res.statusCode).toEqual(200);  // Überprüfe den Statuscode
     expect(res.body.avatar).toBe('new_avatar.png');  // Avatar sollte geändert sein

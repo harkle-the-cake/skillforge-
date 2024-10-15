@@ -13,8 +13,4 @@ const Equipment = sequelize.define('Equipment', {
   },
 });
 
-// Beziehung: Ein Benutzer hat mehrere Ausrüstungsgegenstände
-User.hasMany(Equipment, { as: 'equipment', foreignKey: 'userId' });
-Equipment.belongsTo(User, { foreignKey: 'userId' });
-
 module.exports = Equipment;

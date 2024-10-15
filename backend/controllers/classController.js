@@ -7,8 +7,7 @@ exports.getClasses = async (req, res) => {
   try {
     const classes = await Class.findAll({
       include: {
-        model: Level,
-        include: [EndBoss],
+        model: Level
       },
     });
     res.json(classes);
@@ -26,11 +25,9 @@ exports.createClass = async (req, res) => {
     const classItem = await Class.create({ className });
 
     for (const level of levels) {
-      const boss = level.bossId ? await Boss.findByPk(level.bossId) : null;
       await Level.create({
         ...level,
-        ClassId: classItem.id,
-        BossId: boss ? boss.id : null,
+        ClassId: classItem.id
       });
     }
 
@@ -77,8 +74,7 @@ exports.updateClass = async (req, res) => {
     for (const level of levels) {
       const boss = level.bossId ? await Boss.findByPk(level.bossId) : null;
       await Level.update({
-        ...level,
-        BossId: boss ? boss.id : null,
+        ...level
       }, {
         where: { id: level.id },
       });
