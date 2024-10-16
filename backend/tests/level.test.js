@@ -51,6 +51,7 @@ describe('Level API', () => {
       .set('Authorization', `Bearer ${tokens.instructor.token}`) // Ausbilder-Token
       .send({
         className: 'Magier',
+        levels: []
       });
 
     const classId = classRes.body.id;
@@ -81,7 +82,10 @@ describe('Level API', () => {
       .set('Authorization', `Bearer ${tokens.instructor.token}`)
       .send({
         className: 'Krieger',
+        levels: []
       });
+
+    expect(classRes.statusCode).toEqual(201);
 
     const classId = classRes.body.id;
 
@@ -93,8 +97,10 @@ describe('Level API', () => {
         description: 'Anfänger-Krieger',
         requiredXP: 100,
         levelName: "test",
-        classId,
+        classId
       });
+
+    expect(levelRes.statusCode).toEqual(201);
 
     const levelId = levelRes.body.id;
 
@@ -145,6 +151,6 @@ describe('Level API', () => {
 
     expect(res.statusCode).toEqual(201);
     expect(res.body.levelNumber).toEqual(2);
-    expect(res.body.boss.name).toBe('Dunkler Lord');
+    expect(res.body.Boss.name).toBe('Dunkler Lord');
   });
 });

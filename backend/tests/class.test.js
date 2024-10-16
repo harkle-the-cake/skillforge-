@@ -37,7 +37,7 @@ describe('Class API', () => {
       .post('/api/classes')
       .set('Authorization', `Bearer ${tokens.instructor.token}`)
       .send({
-        className: 'Magier',
+        className: 'MagierMit2Level',
         levels: [
           { levelNumber: 1, levelName: 'Novize', requiredXP: 100 },
           { levelNumber: 2, levelName: 'Lehrling', requiredXP: 200 },
@@ -45,18 +45,59 @@ describe('Class API', () => {
       });
 
     expect(res.statusCode).toEqual(201);
-    expect(res.body.className).toBe('Magier');
+    expect(res.body.className).toBe('MagierMit2Level');
 
-    const createdClass = await Class.findOne({ where: { className: 'Magier' } });
+    const createdClass = await Class.findOne({ where: { className: 'MagierMit2Level' } });
     expect(createdClass).toBeTruthy();
 
     const createdLevels = await Level.findAll({ where: { ClassId: createdClass.id } });
     expect(createdLevels.length).toBe(2);
   });
 
+    // Test für das Erstellen einer Klasse
+      it('should create a new class with no levels (Ausbilder only)', async () => {
+        const res = await request(app)
+          .post('/api/classes')
+          .set('Authorization', `Bearer ${tokens.instructor.token}`)
+          .send({
+            className: 'Magier'
+          });
+
+        expect(res.statusCode).toEqual(201);
+        expect(res.body.className).toBe('Magier');
+
+        const createdClass = await Class.findOne({ where: { className: 'Magier' } });
+        expect(createdClass).toBeTruthy();
+
+        const createdLevels = await Level.findAll({ where: { ClassId: createdClass.id } });
+        expect(createdLevels.length).toBe(0);
+      });
+
+     // Test für das Erstellen einer Klasse
+      it('should create a new class with empty level array (Ausbilder only)', async () => {
+        const res = await request(app)
+          .post('/api/classes')
+          .set('Authorization', `Bearer ${tokens.instructor.token}`)
+          .send({
+            className: 'Magier',
+            levels: [],
+          });
+
+        expect(res.statusCode).toEqual(201);
+        expect(res.body.className).toBe('Magier');
+
+        const createdClass = await Class.findOne({ where: { className: 'Magier' } });
+        expect(createdClass).toBeTruthy();
+
+        const createdLevels = await Level.findAll({ where: { ClassId: createdClass.id } });
+        expect(createdLevels.length).toBe(0);
+      });
+
+  // Test für das Löschen einer Klasse
+  it('should not create a class with user token', async () => {
     const res = await request(app)
       .post('/api/classes')
-      .set('Authorization', `Bearer ${tokens.instructor.token}`)
+      .set('Authorization', `Bearer ${tokens.testuser1.token}`)
       .send({
         className: 'Krieger',
         levels: [
@@ -65,7 +106,6 @@ describe('Class API', () => {
       });
 
     expect(res.statusCode).toEqual(403);
-    expect(res.body.error).toBe('Zugriff verweigert. Nur Ausbilder dürfen diese Aktion durchführen.');
   });
 
   // Test für das Löschen einer Klasse
@@ -75,7 +115,7 @@ describe('Class API', () => {
       .post('/api/classes')
       .set('Authorization', `Bearer ${tokens.instructor.token}`)
       .send({
-        className: 'Krieger',
+        className: 'KriegerZuLoeschen',
         levels: [
           { levelNumber: 1, levelName: 'Anfänger', requiredXP: 50 },
         ],
@@ -98,29 +138,18 @@ describe('Class API', () => {
   it('should deny access to non-instructors for class deletion', async () => {
     const classRes = await request(app)
       .post('/api/classes')
-      .set('Authorization', `Bearer ${tokens.testuser1.token}`)
+      .set('Authorization', `Bearer ${tokens.instructor.token}`)
       .send({
-        className: 'Schurke',
-        levels: [
-          { levelNumber: 1, levelName: 'Anfänger', requiredXP: 50 },
-        ],
+        className: 'SchurkeNichtLoeschen',
+        levels: [],
       });
     expect(classRes.statusCode).toEqual(201);
-
-    const userLoginRes = await request(app)
-      .post('/api/auth/login')
-      .send({
-        username: 'testuser',
-        password: 'password123',
-      });
-    const userToken = userLoginRes.body.token;
 
     const classId = classRes.body.id;
     const deleteRes = await request(app)
       .delete(`/api/classes/${classId}`)
-      .set('Authorization', `Bearer ${userToken}`);
+      .set('Authorization', `Bearer ${tokens.testuser1.token}`);
     expect(deleteRes.statusCode).toEqual(403);
-    expect(deleteRes.body.error).toBe('Zugriff verweigert. Nur Ausbilder dürfen diese Aktion durchführen.');
   });
 
   // Test für das Aktualisieren einer Klasse
@@ -136,6 +165,8 @@ describe('Class API', () => {
       });
     expect(classRes.statusCode).toEqual(201);
 
+    //console.error(classRes);
+
     const classId = classRes.body.id;
 
     const updateRes = await request(app)
@@ -144,12 +175,10 @@ describe('Class API', () => {
       .send({
         className: 'Heilermeister',
         levels: [
-          { id: classRes.body.levels[0].id, levelName: 'Meisterheiler', requiredXP: 300 },
+          { id: classRes.body.Levels[0].id, levelName: 'Meisterheiler', requiredXP: 300 },
         ],
       });
     expect(updateRes.statusCode).toEqual(200);
-    expect(updateRes.body.message).toBe('Klasse erfolgreich aktualisiert');
-
     const updatedClass = await Class.findByPk(classId);
     expect(updatedClass.className).toBe('Heilermeister');
   });

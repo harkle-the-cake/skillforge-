@@ -22,15 +22,26 @@ exports.createClass = async (req, res) => {
   try {
     const { className, levels } = req.body;
 
+    // Klasse erstellen
     const classItem = await Class.create({ className });
 
-    for (const level of levels) {
-      await Level.create({
-        ...level,
-        ClassId: classItem.id
+    // Überprüfen, ob Levels existieren
+    if (levels && levels.length > 0) {
+      for (const level of levels) {
+        await Level.create({
+          ...level,
+          ClassId: classItem.id
+        });
+      }
+
+      // Erstellte Klasse samt verknüpften Levels zurückgeben
+      const createdClass = await Class.findByPk(classItem.id, {
+        include: [Level]
       });
+      return res.status(201).json(createdClass);
     }
 
+    // Falls keine Levels vorhanden sind, nur die Klasse zurückgeben
     res.status(201).json(classItem);
   } catch (error) {
     console.error('Fehler beim Anlegen der Klasse:', error);
@@ -45,6 +56,7 @@ exports.deleteClass = async (req, res) => {
     const classItem = await Class.findByPk(id);
 
     if (!classItem) {
+      //console.error("unable to delete class, class not found: " + id);
       return res.status(404).json({ error: 'Klasse nicht gefunden' });
     }
 
@@ -72,7 +84,6 @@ exports.updateClass = async (req, res) => {
 
     // Levels aktualisieren
     for (const level of levels) {
-      const boss = level.bossId ? await Boss.findByPk(level.bossId) : null;
       await Level.update({
         ...level
       }, {
@@ -80,7 +91,11 @@ exports.updateClass = async (req, res) => {
       });
     }
 
-    res.json({ message: 'Klasse erfolgreich aktualisiert' });
+    // Erstellte Klasse samt verknüpften Levels zurückgeben
+    const updatedClass = await Class.findByPk(classItem.id, {
+            include: [Level]
+    });
+    return res.status(200).json(updatedClass);
   } catch (error) {
     console.error('Fehler beim Aktualisieren der Klasse:', error);
     res.status(500).json({ error: 'Fehler beim Aktualisieren der Klasse' });
