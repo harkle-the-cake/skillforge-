@@ -52,6 +52,7 @@ html, body {
   overflow-y: auto; /* Scrollen, wenn der Inhalt zu groß ist */
   background-color: #f0f0f0; /* Beispiel Hintergrundfarbe */
   margin-top: 60px;
+  overflow: hidden;
 }
 
 .content-area {
