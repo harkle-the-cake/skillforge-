@@ -1,0 +1,55 @@
+/* Grundlegendes Styling für das Azubi-Verwaltungstool */
+.azubi-container {
+  margin-top: 20px; /* Platz über dem Container */
+  padding: 20px;
+  background-color: #333;
+  color: #fff;
+  border-radius: 8px;
+}
+
+.azubi-table {
+  width: 100%; /* Tabelle auf volle Breite setzen */
+  background-color: #444;
+  color: #fff;
+  text-align: left;
+}
+
+.azubi-table th,
+.azubi-table td {
+  padding: 10px;
+  border-bottom: 1px solid #555;
+}
+
+.azubi-table th {
+  background-color: #222;
+  font-weight: bold;
+}
+
+.azubi-table td {
+  background-color: #333;
+}
+
+.azubi-table td button {
+  margin-right: 10px;
+  background-color: #90caf9; /* Buttons mit blauen Akzenten */
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.azubi-table td button:hover {
+  background-color: #64b5f6;
+}
+
+/* Media Queries für kleinere Bildschirme */
+@media (max-width: 768px) {
+  .azubi-table th, .azubi-table td {
+    font-size: 12px; /* Kleinere Schriftart auf kleineren Bildschirmen */
+  }
+
+  .azubi-table td button {
+    padding: 5px; /* Kleinere Buttons */
+  }
+}

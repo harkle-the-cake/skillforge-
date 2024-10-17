@@ -5,6 +5,9 @@ import Register from './Register';
 import Login from './Login';
 import Stats from './Stats';
 import InstructorDashboard from './InstructorDashboard';
+import ClassManagement from './ClassManagement';
+import LevelManagement from './LevelManagement';
+import AzubiManagement from './AzubiManagement';
 
 function App() {
   const [token, setToken] = useState('');
@@ -26,43 +29,19 @@ function App() {
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <Router>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '100vh', // Volle Höhe des Viewports
-        }}>
-          {/* Hauptinhalt */}
-          <div style={{
-            flexGrow: 1, // Füllt den restlichen Platz zwischen Header und Footer
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            maxHeight: '90vh'
-          }}>
-            <Routes>
-              <Route path="/" element={<Login setToken={setToken} />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login setToken={setToken} />} />
-              <Route path="/stats" element={<Stats token={token} />} />
-              <Route path="/azubi/:id" element={<Stats token={token}/>} />
-              {/* Nur für Ausbilder */}
-              <Route path="/instructor-dashboard" element={<InstructorDashboard token={token}/>} />
-            </Routes>
-          </div>
-
-          {/* Footer */}
-          <footer style={{
-            background: '#121212',
-            color: '#fff',
-            textAlign: 'center',
-            padding: '10px 0',
-            width: '100%',
-            position: 'sticky',
-            bottom: 0,
-          }}>
-            <p>Noch kein Konto? <Link to="/register" style={{ color: '#90caf9' }}>Registrieren</Link></p>
-          </footer>
-        </div>
+        <Routes>
+          <Route path="/" element={<Login setToken={setToken} />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login setToken={setToken} />} />
+          <Route path="/stats" element={<Stats token={token} />} />
+          <Route path="/azubi/:id" element={<Stats token={token}/>} />
+          {/* Nur für Ausbilder */}
+           <Route path="/instructor-dashboard" element={<InstructorDashboard token={token} />} />
+           <Route path="/azubi-management" element={<AzubiManagement token={token} />} />
+           <Route path="/class-management" element={<ClassManagement token={token} />} />
+           <Route path="/level-management" element={<LevelManagement token={token} />} />
+           <Route path="/class-management/:classId/levels" element={<LevelManagement token={token} />} />
+        </Routes>
       </Router>
     </ThemeProvider>
   );

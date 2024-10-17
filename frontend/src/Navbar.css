@@ -1,0 +1,102 @@
+/* Grundlegendes Styling für die Navbar */
+.navbar {
+  background-color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  position: fixed; /* Positioniere die Navbar oben auf der Seite */
+  top: 0;
+  width: 100%; /* Vollbreite */
+  z-index: 1000; /* Über alle anderen Elemente setzen */
+  left:0;
+  right:0;
+}
+
+/* Logo links positionieren */
+.logo {
+  height: 50px;
+  margin-left: 20px;
+}
+
+/* Titel in der Mitte */
+.navbar-title {
+  flex-grow: 1;
+  font-size: 24px;
+  color: white;
+  text-align: center;
+}
+
+/* Links im Menü für größere Bildschirme */
+.navbar-links {
+  display: flex;
+  gap: 20px; /* Abstand zwischen den Links */
+}
+
+.navbar-links a {
+  color: white;
+  text-decoration: none;
+}
+
+.navbar-links a:hover {
+  color: #90caf9; /* Hover-Effekt */
+}
+
+/* Hamburger-Icon Styling */
+.hamburger-icon {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 25px;
+  width: 30px;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+.hamburger-icon .bar {
+  width: 100%;
+  height: 3px;
+  background-color: white;
+  border-radius: 5px;
+}
+
+/* Dropdown-Menü für mobile Geräte */
+.navbar-menu {
+  position: absolute;
+  top: 60px;
+  right: 10px;
+  background-color: #444;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.navbar-menu a {
+  color: white;
+  text-decoration: none;
+  padding: 10px 0;
+}
+
+.navbar-menu a:hover {
+  background-color: #555;
+  border-radius: 4px;
+}
+
+/* Media Query für mobile Geräte */
+@media (max-width: 768px) {
+  .navbar-links {
+    display: none; /* Verstecke das Menü auf kleineren Bildschirmen */
+  }
+
+  .hamburger-icon {
+    display: flex; /* Zeige das Hamburger-Icon auf kleineren Bildschirmen */
+  }
+}
+
+/* Media Query für größere Bildschirme */
+@media (min-width: 769px) {
+  .navbar-menu {
+    display: none; /* Verstecke das Dropdown-Menü auf größeren Bildschirmen */
+  }
+}

@@ -82,14 +82,18 @@ exports.updateClass = async (req, res) => {
     classItem.className = className || classItem.className;
     await classItem.save();
 
-    // Levels aktualisieren
-    for (const level of levels) {
-      await Level.update({
-        ...level
-      }, {
-        where: { id: level.id },
-      });
+    if (levels && levels.length > 0)
+    {
+        // Levels aktualisieren
+        for (const level of levels) {
+          await Level.update({
+            ...level
+          }, {
+            where: { id: level.id },
+          });
+        }
     }
+
 
     // Erstellte Klasse samt verknüpften Levels zurückgeben
     const updatedClass = await Class.findByPk(classItem.id, {

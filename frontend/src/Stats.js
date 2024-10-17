@@ -46,6 +46,7 @@ const Stats = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.error(res.data);
         setUserData(res.data);
         setLoading(false);
       } catch (err) {
@@ -104,12 +105,12 @@ const Stats = () => {
             Deine Klassen
           </Typography>
           <Paper style={{ padding: '20px', backgroundColor: '#555', color: '#fff' }}>
-            {userData.classes.length > 0 ? (
+            {userData.ClassProgresses && userData.ClassProgresses.length > 0 ? (
               <Grid container spacing={2}>
-                {userData.classes.map((classData) => (
-                  <Grid item xs={12} sm={6} md={4} key={classData.className}>
+                {userData.ClassProgresses.map((classData) => (
+                  <Grid item xs={12} sm={6} md={4} key={classData.Class.className}>
                     <Paper style={{ padding: '20px', backgroundColor: '#333', color: '#fff' }}>
-                      <Typography variant="h5">{classData.className}</Typography>
+                      <Typography variant="h5">{classData.Class.className}</Typography>
                       <Typography variant="h6">Level: {classData.level}</Typography>
                       <Typography variant="h6">XP: {classData.xp}</Typography>
                     </Paper>
@@ -128,7 +129,7 @@ const Stats = () => {
             Ausrüstung
           </Typography>
           <Paper style={{ padding: '20px', backgroundColor: '#555', color: '#fff' }}>
-            {userData.equipment.length > 0 ? (
+            {userData.equipment && userData.equipment.length > 0 ? (
               <ul>
                 {userData.equipment.map((item, index) => (
                   <li key={index}>

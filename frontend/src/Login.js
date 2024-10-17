@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { TextField, Button, Container, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
@@ -99,6 +100,20 @@ const Login = ({ setToken }) => {
           </Typography>
         )}
       </Container>
+
+      {/* Footer */}
+      <footer style={{
+        background: '#121212',
+        color: '#fff',
+        textAlign: 'center',
+        padding: '10px 0',
+        width: '100%',
+        position: 'fixed',
+        bottom: 0,
+      }}>
+        <p>Noch kein Konto? <Link to="/register" style={{ color: '#90caf9' }}>Registrieren</Link></p>
+      </footer>
+
     </div>
   );
 };

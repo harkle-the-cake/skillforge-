@@ -2,6 +2,13 @@
   text-align: center;
 }
 
+html, body {
+  margin: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -22,6 +29,41 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Vollständige Höhe des Viewports */
+  width: 100%;
+}
+
+.nav {
+  flex-shrink: 0; /* Fixe Größe */
+  height: 60px; /* Fixe Höhe für die Navigation */
+  background-color: #121212; /* Hintergrundfarbe der Navigation */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.content {
+  flex-grow: 1; /* Restlicher Platz wird vom Inhalt eingenommen */
+  overflow-y: auto; /* Scrollen, wenn der Inhalt zu groß ist */
+  background-color: #f0f0f0; /* Beispiel Hintergrundfarbe */
+  margin-top: 60px;
+}
+
+.content-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: fixed; /* Positioniere die Navbar oben auf der Seite */
+  top: 100px;
+  width: 100%; /* Vollbreite */
+  left:0;
+  right:0;
+  padding: 25px;
 }
 
 .App-link {
