@@ -70,26 +70,34 @@ exports.deleteAzubi = async (req, res) => {
 
 exports.changeAzubiPassword = async (req, res) => {
   try {
-    const { id } = req.params; // ID des Azubis aus der URL
-    const { newPassword } = req.body; // Neues Passwort aus dem Request-Body
+    const { id } = req.params; // ID des Azubis
+    const { password } = req.body; // Neues Passwort aus dem Request-Body
 
-    // Finde den Azubi in der Datenbank
-    const azubi = await User.findOne({ where: { id, role: 'Azubi' } });
+    // Überprüfen, ob das Passwort bereitgestellt wurde
+    if (!password) {
+      return res.status(400).json({ error: 'Passwort erforderlich.' });
+    }
 
-    if (!azubi) {
-      return res.status(404).json({ error: 'Azubi nicht gefunden' });
+    // Benutzer finden
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ error: 'Benutzer nicht gefunden.' });
     }
 
     // Passwort hashen
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(password, 10); // Salz von 10 verwenden
 
-    // Passwort in der Datenbank aktualisieren
-    azubi.password = hashedPassword;
-    await azubi.save();
+    // Passwort aktualisieren und `updatedAt` wird automatisch aktualisiert
+    user.password = hashedPassword;
+    await user.save();
 
-    res.json({ message: 'Passwort erfolgreich geändert' });
+    // Gebe eine Erfolgsnachricht und das aktualisierte `updatedAt` zurück
+    res.json({
+      message: 'Passwort erfolgreich geändert.',
+      updatedAt: user.updatedAt // Das aktualisierte Datum zurückgeben
+    });
   } catch (error) {
     console.error('Fehler beim Ändern des Passworts:', error);
-    res.status(500).json({ error: 'Serverfehler' });
+    res.status(500).json({ error: 'Fehler beim Ändern des Passworts.' });
   }
 };
