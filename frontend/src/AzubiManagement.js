@@ -158,12 +158,14 @@ const AzubiManagement = ({ token }) => {
             fullWidth
             margin="normal"
           />
-          <Button onClick={changePassword} variant="contained" color="primary" style={{ marginRight: '10px' }}>
-            Passwort ändern
-          </Button>
-          <Button onClick={() => setOpenPasswordModal(false)} variant="outlined">
-            Abbrechen
-          </Button>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
+              <Button onClick={changePassword} variant="contained" color="primary" style={{ marginRight: '10px' }}>
+                Passwort ändern
+              </Button>
+              <Button onClick={() => setOpenPasswordModal(false)} variant="outlined">
+                Abbrechen
+              </Button>
+          </div>
         </Box>
       </Modal>
 
@@ -174,12 +176,14 @@ const AzubiManagement = ({ token }) => {
           <Typography style={{ marginBottom: '10px' }}>
             Wollen Sie den Azubi <strong>{azubiToDelete?.username}</strong> wirklich löschen?
           </Typography>
-          <Button onClick={deleteAzubi} variant="contained" color="primary" style={{ marginRight: '10px' }}>
-            Ja
-          </Button>
-          <Button onClick={() => setOpenDeleteModal(false)} variant="outlined">
-            Nein
-          </Button>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
+              <Button onClick={deleteAzubi} variant="contained" color="primary" style={{ marginRight: '10px' }}>
+                Ja
+              </Button>
+              <Button onClick={() => setOpenDeleteModal(false)} variant="outlined">
+                Nein
+              </Button>
+          </div>
         </Box>
       </Modal>
     </Container>

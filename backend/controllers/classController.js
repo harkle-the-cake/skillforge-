@@ -17,6 +17,27 @@ exports.getClasses = async (req, res) => {
   }
 };
 
+exports.getClassById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const classItem = await Class.findByPk(id, {
+      include: {
+        model: Level,
+        include: [Boss],
+      },
+    });
+
+    if (!classItem) {
+      return res.status(404).json({ error: 'Klasse nicht gefunden' });
+    }
+
+    res.json(classItem);
+  } catch (error) {
+    console.error('Fehler beim Abrufen der Klasse:', error);
+    res.status(500).json({ error: 'Fehler beim Abrufen der Klasse' });
+  }
+};
+
 // Klasse anlegen (nur Ausbilder)
 exports.createClass = async (req, res) => {
   try {
@@ -68,40 +89,48 @@ exports.deleteClass = async (req, res) => {
   }
 };
 
-// Klasse aktualisieren (nur Ausbilder)
 exports.updateClass = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params; // Stelle sicher, dass die Klasse-ID aus den Parametern kommt
     const { className, levels } = req.body;
+
+    // Überprüfe, ob die ID vorhanden ist
+    if (!id) {
+      return res.status(400).json({ error: "Klassen-ID fehlt" });
+    }
 
     const classItem = await Class.findByPk(id);
     if (!classItem) {
       return res.status(404).json({ error: 'Klasse nicht gefunden' });
     }
 
+    // Klasse aktualisieren
     classItem.className = className || classItem.className;
     await classItem.save();
 
-    if (levels && levels.length > 0)
-    {
-        // Levels aktualisieren
-        for (const level of levels) {
-          await Level.update({
-            ...level
-          }, {
-            where: { id: level.id },
-          });
+    // Levels aktualisieren
+    for (const level of levels) {
+      if (level.id) {  // Nur existierende Levels aktualisieren
+        const existingLevel = await Level.findByPk(level.id);
+        if (existingLevel) {
+          existingLevel.levelNumber = level.levelNumber;
+          existingLevel.description = level.description;
+          existingLevel.requiredXP = level.requiredXP;
+          await existingLevel.save();
         }
+      } else {
+        // Neues Level anlegen
+        await Level.create({
+          ...level,
+          ClassId: classItem.id
+        });
+      }
     }
 
-
-    // Erstellte Klasse samt verknüpften Levels zurückgeben
-    const updatedClass = await Class.findByPk(classItem.id, {
-            include: [Level]
-    });
-    return res.status(200).json(updatedClass);
+    res.json({ message: 'Klasse erfolgreich aktualisiert' });
   } catch (error) {
     console.error('Fehler beim Aktualisieren der Klasse:', error);
     res.status(500).json({ error: 'Fehler beim Aktualisieren der Klasse' });
   }
 };
+
