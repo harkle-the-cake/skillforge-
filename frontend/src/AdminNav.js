@@ -28,7 +28,7 @@ const AdminNav = () => {
         <Link to="/dashboard">Dashboard</Link>
         <Link to="/azubi-management">Azubi-Verwaltung</Link>
         <Link to="/class-management">Klassenverwaltung</Link>
-        <Link to="/equipment">Ausrüstung</Link>
+        <Link to="/boss-management">Bosse</Link>
         <Link to="/quests">Quests</Link>
       </div>
 
@@ -45,8 +45,7 @@ const AdminNav = () => {
           <Link to="/dashboard" onClick={toggleMenu}>Dashboard</Link>
           <Link to="/azubi-management" onClick={toggleMenu}>Azubi-Verwaltung</Link>
           <Link to="/class-management" onClick={toggleMenu}>Klassenverwaltung</Link>
-          <Link to="/quests" onClick={toggleMenu}>Quests</Link>
-          <Link to="/equipment" onClick={toggleMenu}>Ausrüstung</Link>
+          <Link to="/boss-management" onClick={toggleMenu}>Bosse</Link>
         </div>
       )}
     </nav>

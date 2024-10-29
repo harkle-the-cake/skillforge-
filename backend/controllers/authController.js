@@ -7,6 +7,7 @@ const User = require('../models/User');
 const INSTRUCTOR_TOKEN = process.env.INSTRUCTOR_TOKEN;
 const TRAINEE_TOKEN = process.env.TRAINEE_TOKEN;
 const JWT_SECRET = process.env.JWT_SECRET;
+const EXPIRATION = "12h";
 
 exports.register = async (req, res) => {
   const { username, password, role, registrationToken } = req.body;
@@ -62,7 +63,7 @@ exports.login = async (req, res) => {
 
     // Rolle und ID im JWT speichern
     const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, {
-      expiresIn: '1h',
+      expiresIn: EXPIRATION,
     });
 
     res.json({ token });

@@ -6,6 +6,14 @@ const Class = sequelize.define('Class', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  description: {
+      type: DataTypes.STRING,
+      allowNull: true,
+  },
+  imageUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+  },
 });
 
 module.exports = Class;

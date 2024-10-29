@@ -8,6 +8,7 @@ import InstructorDashboard from './InstructorDashboard';
 import ClassManagement from './ClassManagement';
 import LevelManagement from './LevelManagement';
 import AzubiManagement from './AzubiManagement';
+import BossManagement from './BossManagement';
 import ViewClass from './ViewClass';
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
            <Route path="/azubi-management" element={<AzubiManagement token={token} />} />
            <Route path="/class-management" element={<ClassManagement token={token} />} />
            <Route path="/level-management" element={<LevelManagement token={token} />} />
+           <Route path="/boss-management" element={<BossManagement token={token} />} />
            <Route path="/class-management/:classId/levels" element={<LevelManagement token={token} />} />
            <Route path="/classes/:id" element={<ViewClass token={token} />} />
         </Routes>

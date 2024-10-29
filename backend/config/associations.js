@@ -12,19 +12,19 @@ function defineAssociations() {
   ClassProgress.belongsTo(User, { foreignKey: 'UserId' });
 
   // ClassProgress to Class (1:1)
-  ClassProgress.belongsTo(Class, { foreignKey: 'ClassId'});
+  ClassProgress.belongsTo(Class, { foreignKey: 'ClassId' });
   Class.hasMany(ClassProgress, { foreignKey: 'ClassId' });
 
-  // Class to Level (1:n)
-  Class.hasMany(Level, { foreignKey: 'ClassId' });
-  Level.belongsTo(Class, { foreignKey: 'ClassId' });
+  // Class to Level (1:n) - Verwende Kleinbuchstaben `levels` als Alias
+  Class.hasMany(Level, { foreignKey: 'ClassId', as: 'levels' });
+  Level.belongsTo(Class, { foreignKey: 'ClassId', as: 'class' });
 
-  // Level to Boss (0:1)
-  Level.belongsTo(Boss, { foreignKey: 'BossId', allowNull: true });
+  // Level to Boss (0:1) - Optional
+  Level.belongsTo(Boss, { foreignKey: 'BossId', as: 'boss', allowNull: true });
 
   // Level to Ability (1:n)
-  Level.hasMany(Ability, { foreignKey: 'LevelId'});
-  Ability.belongsTo(Level, { foreignKey: 'LevelId'});
+  Level.hasMany(Ability, { foreignKey: 'LevelId', as: 'abilities' });
+  Ability.belongsTo(Level, { foreignKey: 'LevelId', as: 'level' });
 }
 
 module.exports = defineAssociations;

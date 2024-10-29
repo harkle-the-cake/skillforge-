@@ -1,177 +1,164 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Box, Button, Typography, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton } from '@mui/material';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import './App.css';
+import { Modal, Box, Button, Typography, TextField, Tab, Tabs, Input } from '@mui/material';
+
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const ClassViewModal = ({ open, onClose, classData, mode, onSave }) => {
   const [className, setClassName] = useState('');
+  const [description, setDescription] = useState('');
   const [levels, setLevels] = useState([]);
-  const [xpMethod, setXpMethod] = useState('linear');
+  const [selectedTab, setSelectedTab] = useState(0);
+  const [image, setImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
-  const isMobile = useMediaQuery('(max-width:600px)'); // Check for mobile
+  // console.log(classData);
 
   useEffect(() => {
     if (classData) {
       setClassName(classData.className || '');
-      setLevels(classData.levels || []);
+      setDescription(classData.description || '');
+      setPreviewUrl(classData.imageUrl ? `${API_URL}${classData.imageUrl}` : null);
+
+      // Levels sortiert nach levelNumber setzen
+      const sortedLevels = (classData.levels || []).slice().sort((a, b) => a.levelNumber - b.levelNumber);
+      setLevels(sortedLevels);
     }
   }, [classData]);
 
-  const calculateXP = (levelNumber) => {
-    if (xpMethod === 'linear') {
-      return levelNumber * 100;
-    } else if (xpMethod === 'steigend') {
-      return Math.floor(300 * (Math.pow(2, levelNumber - 1) - 1));
-    }
-    return 0;
-  };
-
   const handleSave = () => {
-    const updatedClass = {
-      ...classData,
-      className,
-      levels,
-    };
+    const updatedClass = { ...classData, className, description, levels, image };
     onSave(updatedClass);
     onClose();
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
+
   const addLevel = () => {
-    const maxLevelNumber = levels.length > 0 ? Math.max(...levels.map(l => parseInt(l.levelNumber))) : 0;
-    const newLevelNumber = maxLevelNumber + 1;
-    const newXP = calculateXP(newLevelNumber);
-    setLevels([...levels, { levelNumber: newLevelNumber, levelName: '', description: '', requiredXP: newXP }]);
+    const newLevelNumber = levels.length + 1;
+    const newLevel = { levelNumber: newLevelNumber, levelName: '', description: '', requiredXP: '', boss: null, image: null };
+    setLevels([...levels, newLevel]);
+    setSelectedTab(levels.length);
+  };
+
+  // Level löschen und Nummerierung anpassen
+  const deleteLevel = (index) => {
+    const updatedLevels = levels.filter((_, i) => i !== index)
+      .map((level, i) => ({ ...level, levelNumber: i + 1 })); // Nummerierung anpassen
+    setLevels(updatedLevels);
+    setSelectedTab(Math.max(0, index - 1)); // Tab wechseln, falls das aktive Level gelöscht wird
   };
 
   const handleLevelChange = (index, field, value) => {
     const updatedLevels = [...levels];
-    updatedLevels[index][field] = value;
+    updatedLevels[index] = { ...updatedLevels[index], [field]: value };
     setLevels(updatedLevels);
   };
 
-  const deleteLevel = (index) => {
-    let updatedLevels = levels.filter((_, i) => i !== index);
-
-    updatedLevels = updatedLevels.map((level, i) => ({
-      ...level,
-      levelNumber: i + 1,
-      requiredXP: calculateXP(i + 1),
-    }));
-
-    setLevels(updatedLevels);
-  };
-
-  const onDragEnd = (result) => {
-    if (!result.destination) return;
-    const reorderedLevels = Array.from(levels);
-    const [removed] = reorderedLevels.splice(result.source.index, 1);
-    reorderedLevels.splice(result.destination.index, 0, removed);
-
-    const updatedLevels = reorderedLevels.map((level, i) => ({
-      ...level,
-      levelNumber: i + 1,
-      requiredXP: calculateXP(i + 1),
-    }));
-
-    setLevels(updatedLevels);
+  const handleTabChange = (event, newValue) => {
+    setSelectedTab(newValue);
   };
 
   return (
     <Modal open={open} onClose={onClose}>
-      <Box sx={isMobile ? mobileModalStyle : modalStyle}>
-        <Typography variant="h6" gutterBottom>
-          {mode === 'view' ? 'Klasse anzeigen' : mode === 'edit' ? 'Klasse bearbeiten' : 'Neue Klasse hinzufügen'}
-        </Typography>
+      <Box sx={modalStyle}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
+          <div style={{ textAlign: 'center',maxWidth: '200px', borderRadius: '10px'  }}>
+              {previewUrl && <img src={previewUrl} alt="Class preview" style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '10px' }} />}
+              {mode !== 'view' && (
+                <>
+                  <Input type="file" onChange={handleImageChange} style={{ marginTop: '5px' }} />
+                </>
+              )}
+           </div>
+          <div style={{ flex: 1 }}>
+            <Typography variant="h6">
+              {mode === 'view' ? 'Klasse anzeigen' : mode === 'edit' ? 'Klasse bearbeiten' : 'Neue Klasse hinzufügen'}
+            </Typography>
+            <TextField
+              label="Klassenname"
+              value={className}
+              onChange={(e) => setClassName(e.target.value)}
+              disabled={mode === 'view'}
+              fullWidth
+              margin="normal"
+            />
+          </div>
+
+        </div>
 
         <TextField
-          label="Klassenname"
-          value={className}
-          onChange={(e) => setClassName(e.target.value)}
-          disabled={mode === 'view'}
-          fullWidth
-          margin="normal"
+              label="Beschreibung"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              disabled={mode === 'view'}
+              fullWidth
+              multiline
+              rows={3}
+              margin="normal"
         />
 
-        <Typography variant="h6" style={{ marginTop: '20px' }}>Levels</Typography>
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="levels">
-            {(provided) => (
-              <TableContainer component={Paper} style={{ marginBottom: '10px', maxHeight: '300px', overflowY: 'auto' }} ref={provided.innerRef} {...provided.droppableProps}>
-                <Table stickyHeader>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Levelname</TableCell>
-                      <TableCell>Beschreibung</TableCell>
-                      {mode !== 'view' && <TableCell>Aktionen</TableCell>}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {levels.length > 0 ? (
-                      levels.map((level, index) => (
-                        <Draggable key={index} draggableId={`${index}`} index={index}>
-                          {(provided) => (
-                            <TableRow
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                              <TableCell>
-                                {/* Name editierbar */}
-                                <TextField
-                                  value={level.levelName}
-                                  onChange={(e) => handleLevelChange(index, 'levelName', e.target.value)}
-                                  disabled={mode === 'view'}
-                                  size="small"
-                                  fullWidth
-                                />
-                                {/* Nummer und XP unterhalb des Namens */}
-                                <Typography variant="caption" display="block">
-                                  Level {level.levelNumber}, XP: {level.requiredXP}
-                                </Typography>
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  value={level.description}
-                                  onChange={(e) => handleLevelChange(index, 'description', e.target.value)}
-                                  disabled={mode === 'view'}
-                                  size="small"
-                                  fullWidth
-                                />
-                              </TableCell>
-                              {mode !== 'view' && (
-                                <TableCell>
-                                  <Button
-                                      onClick={() => deleteLevel(index)}
-                                      style={{ marginRight: '10px' }}
-                                    >
-                                      <img src="/icons/delete_icon.png" alt="Löschen" style={{ width: '25px' }} />
-                                    </Button>
-                                </TableCell>
-                              )}
-                            </TableRow>
-                          )}
-                        </Draggable>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={mode !== 'view' ? 3 : 2} align="center">
-                          Keine Level hinzugefügt
-                        </TableCell>
-                      </TableRow>
-                    )}
-                    {provided.placeholder}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            )}
-          </Droppable>
-        </DragDropContext>
+        <Tabs value={selectedTab} onChange={handleTabChange} variant="scrollable" scrollButtons="auto" aria-label="Level Tabs">
+          {levels.map((level, index) => (
+            <Tab label={`Level ${level.levelNumber || index + 1}`} key={index} />
+          ))}
+          {mode !== 'view' && (
+            <Button variant="contained" color="primary" onClick={addLevel} style={{ marginLeft: '10px' }}>
+              <img src="/icons/create_icon.png" alt="Bearbeiten" style={{ width: '25px' }} />
+            </Button>
+          )}
+        </Tabs>
 
-        {mode !== 'view' && (
-          <Button variant="contained" color="primary" onClick={addLevel} style={{ marginTop: '10px' }}>
-            Neues Level hinzufügen
-          </Button>
+        {levels[selectedTab] && (
+          <Box sx={{ padding: '10px' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: '20px'}}>
+                <TextField
+                  label="Levelname"
+                  value={levels[selectedTab].levelName}
+                  onChange={(e) => handleLevelChange(selectedTab, 'levelName', e.target.value)}
+                  disabled={mode === 'view'}
+                  fullWidth
+                  margin="normal"
+                />
+
+                {mode !== 'view' && (
+                  <Button onClick={() => deleteLevel(selectedTab)}>
+                    Löschen
+                  </Button>
+                )}
+            </Box>
+
+
+            <TextField
+              label="Beschreibung"
+              value={levels[selectedTab].description}
+              onChange={(e) => handleLevelChange(selectedTab, 'description', e.target.value)}
+              disabled={mode === 'view'}
+              fullWidth
+              multiline
+              rows={3}
+              margin="normal"
+            />
+            <TextField
+              label="Erforderliche XP"
+              value={levels[selectedTab].requiredXP}
+              onChange={(e) => handleLevelChange(selectedTab, 'requiredXP', e.target.value)}
+              disabled={mode === 'view'}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Endgegner"
+              value={levels[selectedTab].boss || ''}
+              onChange={(e) => handleLevelChange(selectedTab, 'boss', e.target.value)}
+              disabled={mode === 'view'}
+              fullWidth
+              margin="normal"
+            />
+          </Box>
         )}
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
@@ -189,28 +176,14 @@ const ClassViewModal = ({ open, onClose, classData, mode, onSave }) => {
   );
 };
 
-// Stile für das Modal im mobilen Bereich
-const mobileModalStyle = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: '100%',
-  bgcolor: 'background.paper',
-  p: 2,
-  display: 'flex',
-  flexDirection: 'column',
-  borderRadius: '0',
-};
-
-// Stile für das Modal im Desktop-Bereich
 const modalStyle = {
   position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 800,
-  minHeight: 600,
+  width: 600,
+  height: '80vh',
+  overflowY: 'auto',
   bgcolor: 'background.paper',
   borderRadius: '10px',
   boxShadow: 24,

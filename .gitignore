@@ -131,3 +131,4 @@ dist
 /backend/package-lock.json
 /frontend/package-lock.json
 /.idea/
+/backend/public/images/classes/
