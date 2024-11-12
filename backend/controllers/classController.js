@@ -205,7 +205,7 @@ exports.updateClass = async (req, res) => {
             existingLevel.levelName = level.levelName;
             existingLevel.description = level.description;
             existingLevel.requiredXP = level.requiredXP;
-            existingLevel.boss = level.boss || existingLevel.boss;
+            existingLevel.BossId = level.BossId || null; // Setzt bossId oder null, wenn kein Boss verknüpft ist
             await existingLevel.save();
           }
         } else {

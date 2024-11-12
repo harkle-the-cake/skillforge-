@@ -1,17 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Box, Button, Typography, TextField, Tab, Tabs, Input } from '@mui/material';
+import { Modal, Box, Button, Typography, TextField, Tab, Tabs, Input,Select, MenuItem } from '@mui/material';
+import axios from 'axios';
+import './ClassViewModal.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-const ClassViewModal = ({ open, onClose, classData, mode, onSave }) => {
+const ClassViewModal = ({ open, onClose, classData, mode, onSave, token }) => {
   const [className, setClassName] = useState('');
   const [description, setDescription] = useState('');
   const [levels, setLevels] = useState([]);
   const [selectedTab, setSelectedTab] = useState(0);
   const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [bosses, setBosses] = useState([]); // Liste aller Bosse für die Auswahl
 
-  // console.log(classData);
+  useEffect(() => {
+      const fetchBosses = async () => {
+        try {
+          const res = await axios.get(`${API_URL}/api/bosses`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setBosses(res.data);
+        } catch (error) {
+          console.error('Fehler beim Abrufen der Bosse:', error);
+        }
+      };
+      fetchBosses();
+  }, [token]);
+
 
   useEffect(() => {
     if (classData) {
@@ -21,14 +37,38 @@ const ClassViewModal = ({ open, onClose, classData, mode, onSave }) => {
 
       // Levels sortiert nach levelNumber setzen
       const sortedLevels = (classData.levels || []).slice().sort((a, b) => a.levelNumber - b.levelNumber);
-      setLevels(sortedLevels);
+      setLevels(sortedLevels.map(level => ({ ...level, BossId: level.BossId || null })));
     }
   }, [classData]);
 
+  //console.log(classData);
+
   const handleSave = () => {
-    const updatedClass = { ...classData, className, description, levels, image };
-    onSave(updatedClass);
-    onClose();
+      const updatedLevels = levels.map((level) => ({
+        ...level,
+        bossId: level.bossId || null, // Sicherstellen, dass bossId gesetzt ist
+      }));
+
+      const updatedClass = {
+        ...classData,
+        className,
+        description,
+        levels: updatedLevels, // Stellen Sie sicher, dass levels das `bossId` enthält
+        image,
+      };
+
+      onSave(updatedClass);
+      onClose();
+  };
+
+  // Level-Boss-Änderungshandler
+  const handleBossChange = (index, bossId) => {
+      console.log(index);
+      console.log(bossId);
+      const updatedLevels = [...levels];
+      updatedLevels[index].BossId = bossId;
+      console.log(updatedLevels);
+      setLevels(updatedLevels);
   };
 
   const handleImageChange = (e) => {
@@ -116,7 +156,16 @@ const ClassViewModal = ({ open, onClose, classData, mode, onSave }) => {
           <Box sx={{ padding: '10px' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: '20px'}}>
                 <TextField
+                  label="XP"
+                  className="levelXP"
+                  value={levels[selectedTab].requiredXP}
+                  onChange={(e) => handleLevelChange(selectedTab, 'requiredXP', e.target.value)}
+                  disabled={mode === 'view'}
+                  margin="normal"
+                />
+                <TextField
                   label="Levelname"
+                  className="levelName"
                   value={levels[selectedTab].levelName}
                   onChange={(e) => handleLevelChange(selectedTab, 'levelName', e.target.value)}
                   disabled={mode === 'view'}
@@ -142,22 +191,28 @@ const ClassViewModal = ({ open, onClose, classData, mode, onSave }) => {
               rows={3}
               margin="normal"
             />
-            <TextField
-              label="Erforderliche XP"
-              value={levels[selectedTab].requiredXP}
-              onChange={(e) => handleLevelChange(selectedTab, 'requiredXP', e.target.value)}
-              disabled={mode === 'view'}
+
+             {/* Boss Dropdown */}
+            <Select
+              value={levels[selectedTab].BossId || ''}
+              onChange={(e) => handleBossChange(selectedTab, e.target.value)}
+              displayEmpty
               fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Endgegner"
-              value={levels[selectedTab].boss || ''}
-              onChange={(e) => handleLevelChange(selectedTab, 'boss', e.target.value)}
               disabled={mode === 'view'}
-              fullWidth
-              margin="normal"
-            />
+            >
+              <MenuItem value="">Kein Endgegner</MenuItem>
+              {bosses.map((boss) => (
+                <MenuItem key={boss.id} value={boss.id}>{boss.name}</MenuItem>
+              ))}
+            </Select>
+
+            {/* Boss-Details anzeigen */}
+            {levels[selectedTab].BossId && (
+              <Box sx={{ marginTop: '10px' }}>
+                <Typography variant="body2">Beschreibung: {bosses.find((boss) => boss.id === levels[selectedTab].BossId)?.description}</Typography>
+              </Box>
+            )}
+
           </Box>
         )}
 
