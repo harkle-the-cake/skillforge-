@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Box, Button, Typography, TextField, Tab, Tabs, Input,Select, MenuItem } from '@mui/material';
 import axios from 'axios';
 import './ClassViewModal.css';
+import AddBossModal from './AddBossModal';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -13,6 +14,8 @@ const ClassViewModal = ({ open, onClose, classData, mode, onSave, token }) => {
   const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [bosses, setBosses] = useState([]); // Liste aller Bosse für die Auswahl
+  const [showBossModal, setShowBossModal] = useState(false); // Status für das Boss-Modal
+
 
   useEffect(() => {
       const fetchBosses = async () => {
@@ -100,6 +103,15 @@ const ClassViewModal = ({ open, onClose, classData, mode, onSave, token }) => {
 
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
+  };
+
+  // Öffnet das Modal und prüft, ob das token existiert
+  const openAddBossModal = () => {
+    if (token) {
+      setShowBossModal(true);
+    } else {
+      console.error('Token ist undefined');
+    }
   };
 
   return (
@@ -192,27 +204,63 @@ const ClassViewModal = ({ open, onClose, classData, mode, onSave, token }) => {
               margin="normal"
             />
 
-             {/* Boss Dropdown */}
-            <Select
-              value={levels[selectedTab].BossId || ''}
-              onChange={(e) => handleBossChange(selectedTab, e.target.value)}
-              displayEmpty
-              fullWidth
-              disabled={mode === 'view'}
+            <Box
+              sx={{
+                padding: '10px',
+                marginTop: '20px',
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                opacity: mode === 'view' ? 0.6 : 1, // Bereich ausgrauen im Read-Modus
+                pointerEvents: mode === 'view' ? 'none' : 'auto' // Interaktion deaktivieren im Read-Modus
+              }}
             >
-              <MenuItem value="">Kein Endgegner</MenuItem>
-              {bosses.map((boss) => (
-                <MenuItem key={boss.id} value={boss.id}>{boss.name}</MenuItem>
-              ))}
-            </Select>
+              <Typography variant="subtitle1" style={{ fontWeight: 'bold', marginBottom: '10px' }}>
+                Endgegner
+              </Typography>
 
-            {/* Boss-Details anzeigen */}
-            {levels[selectedTab].BossId && (
-              <Box sx={{ marginTop: '10px' }}>
-                <Typography variant="body2">Beschreibung: {bosses.find((boss) => boss.id === levels[selectedTab].BossId)?.description}</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {/* Boss Dropdown */}
+                    <Select
+                      value={levels[selectedTab].BossId || ''}
+                      onChange={(e) => handleBossChange(selectedTab, e.target.value)}
+                      displayEmpty
+                      fullWidth
+                      disabled={mode === 'view'}
+                    >
+                      <MenuItem value="">Kein Endgegner</MenuItem>
+                      {bosses.map((boss) => (
+                        <MenuItem key={boss.id} value={boss.id}>{boss.name}</MenuItem>
+                      ))}
+                    </Select>
+
+                    {/* Add Button für neuen Boss, nur sichtbar im Bearbeitungsmodus */}
+                    {mode !== 'view' && (
+                        <Button onClick={openAddBossModal} variant="contained" color="primary" style={{ minWidth: '40px', padding: '5px' }}>
+                            <img src="/icons/create_icon.png" alt="Add Boss" style={{ width: '20px', height: '20px' }} />
+                        </Button>
+                    )}
+                  </Box>
+
+                {showBossModal && (
+                  <AddBossModal
+                    open={showBossModal}
+                    onClose={() => setShowBossModal(false)}
+                    onBossAdd={(newBoss) => {
+                      setBosses([...bosses, newBoss]);
+                      // Setzen Sie den neu hinzugefügten Boss als ausgewählten Boss für das aktuelle Level
+                      handleBossChange(selectedTab, newBoss.id);
+                    }}
+                    token={token}  // Token korrekt übergeben
+                  />
+                )}
+
+                {/* Boss-Details anzeigen */}
+                {levels[selectedTab].BossId && (
+                  <Box sx={{ marginTop: '10px' }}>
+                    <Typography variant="body2">Beschreibung: {bosses.find((boss) => boss.id === levels[selectedTab].BossId)?.description}</Typography>
+                  </Box>
+                )}
               </Box>
-            )}
-
           </Box>
         )}
 

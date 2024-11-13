@@ -158,6 +158,7 @@ const ClassManagement = ({ token }) => {
         classData={selectedClass}
         mode={modalMode}
         onSave={handleSaveClass}
+        token={token}
       />
 
       {/* Modal für das Löschen einer Klasse */}
