@@ -26,8 +26,9 @@ const AdminNav = () => {
       {/* Dynamisches Menü */}
       <div className="navbar-links">
         <Link to="/dashboard">Dashboard</Link>
-        <Link to="/azubi-management">Azubi-Verwaltung</Link>
-        <Link to="/class-management">Klassenverwaltung</Link>
+        <Link to="/azubi-management">Azubis</Link>
+        <Link to="/class-management">Klassen</Link>
+        <Link to="/level-management">Level</Link>
         <Link to="/boss-management">Bosse</Link>
         <Link to="/quests">Quests</Link>
       </div>

@@ -2,11 +2,21 @@ const Level = require('../models/Level');
 const Ability = require('../models/Ability');
 const Boss = require('../models/Boss');
 
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer');
+const upload = multer({ dest: 'public/images/classes/' });
+
+const classesDir = path.join(__dirname, '..', 'public', 'images', 'level');
+if (!fs.existsSync(classesDir)) {
+  fs.mkdirSync(classesDir, { recursive: true });
+}
+
 // Level anlegen
 exports.createLevel = async (req, res) => {
   try {
     const { levelNumber, levelName, description, requiredXP, classId, bossId, abilities } = req.body;
-
+    const imageFile = req.file; // Bild aus dem Upload
     const boss = bossId ? await Boss.findByPk(bossId) : null;
 
     const level = await Level.create({
@@ -17,6 +27,21 @@ exports.createLevel = async (req, res) => {
       ClassId: classId, // Klasse zuordnen
       BossId: boss ? boss.id : null, // Boss optional
     });
+
+    // Bild speichern, falls ein neues Bild hochgeladen wurde
+    if (imageFile) {
+       const imagePath = `/images/level/${level.id}.jpg`;
+       const fullPath = path.join(__dirname, '..', 'public', imagePath);
+
+       // Falls der Ordner nicht existiert, erstelle ihn
+       const dirPath = path.dirname(fullPath);
+       if (!fs.existsSync(dirPath)) {
+         fs.mkdirSync(dirPath, { recursive: true });
+       }
+
+       fs.renameSync(imageFile.path, fullPath);
+       level.imageUrl = imagePath;
+    }
 
     // Abilities hinzufügen
     if (abilities && abilities.length > 0) {
@@ -30,7 +55,16 @@ exports.createLevel = async (req, res) => {
     }
 
     const createdLevel = await Level.findByPk(level.id, {
-      include: [Ability, Boss],
+      include: [
+        {
+          model: Boss,
+          as: 'boss', // Assoziation "boss" direkt angeben
+        },
+        {
+          model: Ability,
+          as: 'abilities', // Assoziation "boss" direkt angeben
+        }
+      ]
     });
 
     res.status(201).json(createdLevel);
@@ -63,10 +97,26 @@ exports.updateLevel = async (req, res) => {
   try {
     const { id } = req.params;
     const { levelNumber, description, requiredXP, bossId, abilities } = req.body;
+    const imageFile = req.file;
 
     const level = await Level.findByPk(id);
     if (!level) {
       return res.status(404).json({ error: 'Level nicht gefunden' });
+    }
+
+    // Bild speichern, falls ein neues Bild hochgeladen wurde
+     if (imageFile) {
+          const imagePath = `/images/level/${level.id}.jpg`;
+          const fullPath = path.join(__dirname, '..', 'public', imagePath);
+
+          // Falls der Ordner nicht existiert, erstelle ihn
+          const dirPath = path.dirname(fullPath);
+          if (!fs.existsSync(dirPath)) {
+            fs.mkdirSync(dirPath, { recursive: true });
+          }
+
+          fs.renameSync(imageFile.path, fullPath);
+          level.imageUrl = imagePath;
     }
 
     level.levelName = levelName || level.levelName;
@@ -90,7 +140,16 @@ exports.updateLevel = async (req, res) => {
     }
 
     const updatedLevel = await Level.findByPk(level.id, {
-      include: [Ability, Boss],
+      include: [
+      {
+        model: Boss,
+        as: 'boss', // Assoziation "boss" direkt angeben
+      },
+      {
+        model: Ability,
+        as: 'abilities', // Assoziation "boss" direkt angeben
+      }
+    ]
     });
 
     res.json(updatedLevel);
@@ -104,7 +163,16 @@ exports.updateLevel = async (req, res) => {
 exports.getAllLevels = async (req, res) => {
   try {
     const levels = await Level.findAll({
-      include: [Ability, Boss],
+      include: [
+          {
+            model: Boss,
+            as: 'boss', // Assoziation "boss" direkt angeben
+          },
+          {
+            model: Ability,
+            as: 'abilities', // Assoziation "boss" direkt angeben
+          }
+        ]
     });
     res.json(levels);
   } catch (error) {
@@ -119,7 +187,16 @@ exports.getLevelsForClass = async (req, res) => {
     const { classId } = req.params;
     const levels = await Level.findAll({
       where: { ClassId: classId }, // Nutze die richtige Spalte für die Klasse
-      include: [Ability, Boss],
+      include: [
+          {
+            model: Boss,
+            as: 'boss', // Assoziation "boss" direkt angeben
+          },
+          {
+            model: Ability,
+            as: 'abilities', // Assoziation "boss" direkt angeben
+          }
+        ]
     });
     res.json(levels);
   } catch (error) {
@@ -133,7 +210,16 @@ exports.getLevel = async (req, res) => {
   try {
     const { id } = req.params;
     const level = await Level.findByPk(id, {
-      include: [Ability, Boss],
+      include: [
+          {
+            model: Boss,
+            as: 'boss', // Assoziation "boss" direkt angeben
+          },
+          {
+            model: Ability,
+            as: 'abilities', // Assoziation "boss" direkt angeben
+          }
+        ]
     });
 
     if (!level) {

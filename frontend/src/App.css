@@ -80,3 +80,55 @@ html, body {
     transform: rotate(360deg);
   }
 }
+
+/* App.css */
+
+/* Tabelle: Rahmen und Leuchteffekt */
+.custom-table-container {
+  border: 2px solid #333;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.7); /* Leuchteffekt in Cyan */
+  overflow: hidden;
+}
+
+/* Scrollbalken für die Tabelle */
+.custom-table-container::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.custom-table-container::-webkit-scrollbar-thumb {
+  background-color: #888; /* Mittelgrau */
+  border-radius: 5px;
+}
+
+.custom-table-container::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* Dunkler bei Hover */
+}
+
+.custom-table-container::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* Heller Hintergrund */
+  border-radius: 5px;
+}
+
+/* Tabelle: Sticky Header */
+.custom-table th {
+  background-color: #222; /* Dunkler Header */
+  color: white;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* Tabelle: Zeilenhover */
+.custom-table tr:hover {
+  background-color: rgba(0, 255, 255, 0.2); /* Leichte Cyan-Hintergrundfarbe beim Hover */
+}
+
+/* Tabelle: Rahmen um die Zellen */
+.custom-table td,
+.custom-table th {
+  border: 1px solid #444;
+  padding: 10px;
+}

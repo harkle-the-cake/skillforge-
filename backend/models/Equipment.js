@@ -11,6 +11,10 @@ const Equipment = sequelize.define('Equipment', {
         type: DataTypes.INTEGER,
         defaultValue: 0, // Startet mit 0 Gold
   },
+  imageUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+  }
 });
 
 module.exports = Equipment;

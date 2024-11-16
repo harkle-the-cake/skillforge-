@@ -19,6 +19,10 @@ const Level = sequelize.define('Level', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  imageUrl: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  }
 });
 
 module.exports = Level;

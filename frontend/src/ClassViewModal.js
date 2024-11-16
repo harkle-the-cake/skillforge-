@@ -6,7 +6,17 @@ import AddBossModal from './AddBossModal';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-const ClassViewModal = ({ open, onClose, classData, mode, onSave, token }) => {
+const ClassViewModal = ({
+  open,
+  onClose,
+  data,
+  fields,
+  title,
+  token,
+  mode,
+  onSave,
+  dropdownOptions = {},
+}) => {
   const [className, setClassName] = useState('');
   const [description, setDescription] = useState('');
   const [levels, setLevels] = useState([]);
@@ -33,16 +43,16 @@ const ClassViewModal = ({ open, onClose, classData, mode, onSave, token }) => {
 
 
   useEffect(() => {
-    if (classData) {
-      setClassName(classData.className || '');
-      setDescription(classData.description || '');
-      setPreviewUrl(classData.imageUrl ? `${API_URL}${classData.imageUrl}` : null);
+    if (data) {
+      setClassName(data.className || '');
+      setDescription(data.description || '');
+      setPreviewUrl(data.imageUrl ? `${API_URL}${data.imageUrl}` : null);
 
       // Levels sortiert nach levelNumber setzen
-      const sortedLevels = (classData.levels || []).slice().sort((a, b) => a.levelNumber - b.levelNumber);
+      const sortedLevels = (data.levels || []).slice().sort((a, b) => a.levelNumber - b.levelNumber);
       setLevels(sortedLevels.map(level => ({ ...level, BossId: level.BossId || null })));
     }
-  }, [classData]);
+  }, [data]);
 
   //console.log(classData);
 
@@ -53,7 +63,7 @@ const ClassViewModal = ({ open, onClose, classData, mode, onSave, token }) => {
       }));
 
       const updatedClass = {
-        ...classData,
+        ...data,
         className,
         description,
         levels: updatedLevels, // Stellen Sie sicher, dass levels das `bossId` enthält

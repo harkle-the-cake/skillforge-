@@ -8,6 +8,7 @@ const azubiRoutes = require('./routes/azubi'); // Importiere die Routen-Datei f√
 const classRoutes = require('./routes/classRoutes');
 const levelRoutes = require('./routes/levelRoutes');
 const bossRoutes = require('./routes/bossRoutes');
+const imageRoutes = require('./routes/imageRoutes');
 const defineAssociations = require('./config/associations');
 const User = require('./models/User');
 const Class = require('./models/Class');
@@ -44,6 +45,8 @@ app.use('/api/azubis', azubiRoutes);
 app.use('/api/classes', classRoutes);
 app.use('/api/levels', levelRoutes);
 app.use('/api/bosses', bossRoutes);
+// Bild-Upload-Routen
+app.use('/api/images', imageRoutes);
 
 // Verbindung zur DB herstellen und Server starten (nur in der Laufzeit, nicht in den Tests)
 if (process.env.NODE_ENV !== 'test') {

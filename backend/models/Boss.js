@@ -11,6 +11,10 @@ const Boss = sequelize.define('Boss', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  imageUrl: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  }
 });
 
 module.exports = Boss;
