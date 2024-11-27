@@ -9,6 +9,8 @@ import ClassManagement from './ClassManagement';
 import LevelManagement from './LevelManagement';
 import AzubiManagement from './AzubiManagement';
 import BossManagement from './BossManagement';
+import QuestManagement from './QuestManagement';
+import LevelUpManagement from './LevelUpManagement';
 import ViewClass from './ViewClass';
 
 function App() {
@@ -38,11 +40,13 @@ function App() {
           <Route path="/stats" element={<Stats token={token} />} />
           <Route path="/azubi/:id" element={<Stats token={token}/>} />
           {/* Nur für Ausbilder */}
+           <Route path="/level-ups" element={<LevelUpManagement token={token} />} />
            <Route path="/instructor-dashboard" element={<InstructorDashboard token={token} />} />
            <Route path="/azubi-management" element={<AzubiManagement token={token} />} />
            <Route path="/class-management" element={<ClassManagement token={token} />} />
            <Route path="/level-management" element={<LevelManagement token={token} />} />
            <Route path="/boss-management" element={<BossManagement token={token} />} />
+           <Route path="/quest-management" element={<QuestManagement token={token} />} />
            <Route path="/class-management/:classId/levels" element={<LevelManagement token={token} />} />
            <Route path="/classes/:id" element={<ViewClass token={token} />} />
         </Routes>

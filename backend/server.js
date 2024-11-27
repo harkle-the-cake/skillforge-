@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+
 const sequelize = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -9,6 +10,11 @@ const classRoutes = require('./routes/classRoutes');
 const levelRoutes = require('./routes/levelRoutes');
 const bossRoutes = require('./routes/bossRoutes');
 const imageRoutes = require('./routes/imageRoutes');
+const levelUpRoutes = require('./routes/levelUpRoutes');
+const classProgressRoutes = require('./routes/classProgressRoutes');
+const questRoutes = require('./routes/QuestRoutes');
+const questProgressRoutes = require('./routes/questProgressRoutes');
+
 const defineAssociations = require('./config/associations');
 const User = require('./models/User');
 const Class = require('./models/Class');
@@ -47,6 +53,12 @@ app.use('/api/levels', levelRoutes);
 app.use('/api/bosses', bossRoutes);
 // Bild-Upload-Routen
 app.use('/api/images', imageRoutes);
+// Fortschritt
+app.use('/api/class-progress', classProgressRoutes);
+app.use('/api/level-ups', levelUpRoutes);
+// Quests
+app.use('/api/quests', questRoutes);
+app.use('/api/quest-progress', questProgressRoutes);
 
 // Verbindung zur DB herstellen und Server starten (nur in der Laufzeit, nicht in den Tests)
 if (process.env.NODE_ENV !== 'test') {

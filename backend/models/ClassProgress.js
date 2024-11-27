@@ -12,6 +12,14 @@ const ClassProgress = sequelize.define('ClassProgress', {
     allowNull: false,
     defaultValue: 1,
   },
+  status: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  levelUpPending: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true
+  }
 });
 
 module.exports = ClassProgress;

@@ -134,3 +134,4 @@ dist
 /backend/public/images/classes/
 /backend/public/images/bosses/
 /backend/public/images/level/
+/backend/config/config.json

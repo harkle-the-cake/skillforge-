@@ -18,7 +18,7 @@ exports.getClasses = async (req, res) => {
       include: [
         {
           model: Level,
-          as: 'levels', // Assoziation "levels" direkt angeben
+          as: 'classLevels', // Assoziation "levels" direkt angeben
           include: [
             {
               model: Boss,
@@ -43,7 +43,7 @@ exports.getClassById = async (req, res) => {
       include: [
           {
             model: Level,
-            as: 'levels', // Assoziation "levels" direkt angeben
+            as: 'classLevels', // Assoziation "levels" direkt angeben
             include: [
               {
                 model: Boss,
@@ -106,7 +106,7 @@ exports.createClass = async (req, res) => {
        include: [
             {
               model: Level,
-              as: 'levels', // Assoziation "levels" direkt angeben
+              as: 'classLevels', // Assoziation "levels" direkt angeben
               include: [
                 {
                   model: Boss,
@@ -225,7 +225,7 @@ exports.updateClass = async (req, res) => {
        include: [
             {
               model: Level,
-              as: 'levels', // Assoziation "levels" direkt angeben
+              as: 'classLevels', // Assoziation "levels" direkt angeben
               include: [
                 {
                   model: Boss,

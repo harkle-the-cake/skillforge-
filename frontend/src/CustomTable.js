@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './CustomTable.css';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Button, IconButton, InputAdornment } from '@mui/material';
+import { Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Button, IconButton, InputAdornment } from '@mui/material';
+import './App.css';
 
 const CustomTable = ({ title, columns, data, renderActions, addFunction }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -18,45 +19,52 @@ const CustomTable = ({ title, columns, data, renderActions, addFunction }) => {
   );
 
   return (
-    <TableContainer
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width:'100%' }}>
+            <div className="header">
+                <Typography
+                    variant="h4"
+                    gutterBottom
+                    style={{ marginBottom: '20px', textAlign: 'center', width:'100%' }}>
+                        {title}
+                </Typography>
+                {addFunction && (
+                      <Button variant="contained" color="primary" onClick={addFunction}>
+                        <img
+                          src="/icons/create_icon.png" // Pfad zum Add-Icon
+                          alt="Add"
+                          style={{ width: '20px', height: '20px' }}
+                        />
+                      </Button>
+                )}
+            </div>
+            <TextField
+              label="Suchen..."
+              variant="outlined"
+              fullWidth
+              style={{ marginBottom: '20px' }}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              InputProps={{
+                endAdornment: searchQuery && (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleClearSearch}>
+                      <img
+                        src="/icons/clear_icon.png" // Pfad zum Clear-Icon
+                        alt="Clear Search"
+                        style={{ width: '20px', height: '20px' }}
+                      />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              style={{ marginBottom: '10px' }}
+            />
+      <TableContainer
+          className="custom-table-container" // Stil hinzufügen
           component={Paper}
-          style={{ flexGrow: 1, overflowY: 'auto' }} // FlexGrow macht die Tabelle flexibel
         >
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <div className="header">
-        <h3 style={{ padding: '10px' }}>{title}</h3>
-        {addFunction && (
-            <Button variant="contained" color="primary" onClick={addFunction}>
-              <img
-                src="/icons/create_icon.png" // Pfad zum Add-Icon
-                alt="Add"
-                style={{ width: '20px', height: '20px' }}
-              />
-            </Button>
-          )}
-      </div>
-      <TextField
-        label="Suche"
-        variant="outlined"
-        fullWidth
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        InputProps={{
-          endAdornment: searchQuery && (
-            <InputAdornment position="end">
-              <IconButton onClick={handleClearSearch}>
-                <img
-                  src="/icons/clear_icon.png" // Pfad zum Clear-Icon
-                  alt="Clear Search"
-                  style={{ width: '20px', height: '20px' }}
-                />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-        style={{ marginBottom: '10px' }}
-      />
-      <Table stickyHeader> {/* Sticky Header bleibt beim Scrollen sichtbar */}
+
+      <Table stickyHeader className="custom-table"> {/* Sticky Header bleibt beim Scrollen sichtbar */}
                 <TableHead>
                   <TableRow>
                     {columns.map((column) => (
@@ -85,8 +93,8 @@ const CustomTable = ({ title, columns, data, renderActions, addFunction }) => {
                   ))}
                 </TableBody>
               </Table>
-      </div>
-    </TableContainer>
+        </TableContainer>
+    </div>
   );
 };
 

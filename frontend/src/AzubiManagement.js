@@ -118,7 +118,7 @@ const AzubiManagement = ({ token }) => {
   );
 
   return (
-    <Container>
+    <Box>
       <AdminNav />
       <div className="content-area">
         <CustomTable
@@ -186,7 +186,7 @@ const AzubiManagement = ({ token }) => {
           </div>
         </Box>
       </Modal>
-    </Container>
+    </Box>
   );
 };
 

@@ -1,12 +1,12 @@
 import React from 'react';
 import GenericManagement from './GenericManagement';
 import BossViewModal from './BossViewModal';
-import DynamicViewModal from './DynamicViewModal';
+import LevelViewModal from './LevelViewModal';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 const apiUrl = `${API_URL}/api/levels`;
 
-const BossManagement = ({ token }) => {
+const LevelManagement = ({ token }) => {
   const columns = [
     { field: 'imageUrl', label: 'Bild', type: 'image' },
     { field: 'levelNumber', label: '#' },
@@ -30,8 +30,9 @@ const BossManagement = ({ token }) => {
       columns={columns}
       apiUrl={apiUrl}
       title="Level-Verwaltung"
+      disableAddButton={true} // "Hinzufügen"-Button deaktivieren
       ViewModalComponent={(props) => (
-        <DynamicViewModal
+        <LevelViewModal
           {...props}
           fields={fields}
           title={props.mode === 'add' ? 'Neues Level hinzufügen' : 'Level'}
@@ -41,4 +42,4 @@ const BossManagement = ({ token }) => {
   );
 };
 
-export default BossManagement;
+export default LevelManagement;

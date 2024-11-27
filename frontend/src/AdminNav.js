@@ -25,12 +25,12 @@ const AdminNav = () => {
 
       {/* Dynamisches Menü */}
       <div className="navbar-links">
-        <Link to="/dashboard">Dashboard</Link>
+        <Link to="/level-ups">Level-UPs</Link>
         <Link to="/azubi-management">Azubis</Link>
         <Link to="/class-management">Klassen</Link>
         <Link to="/level-management">Level</Link>
         <Link to="/boss-management">Bosse</Link>
-        <Link to="/quests">Quests</Link>
+        <Link to="/quest-management">Quests</Link>
       </div>
 
       {/* Hamburger-Icon rechts (nur für mobile Geräte sichtbar) */}
@@ -43,10 +43,11 @@ const AdminNav = () => {
       {/* Dropdown-Menü (nur sichtbar, wenn Hamburger-Menü aktiv ist) */}
       {menuOpen && (
         <div className="navbar-menu">
-          <Link to="/dashboard" onClick={toggleMenu}>Dashboard</Link>
+          <Link to="/level-ups" onClick={toggleMenu}>Level-UPs</Link>
           <Link to="/azubi-management" onClick={toggleMenu}>Azubi-Verwaltung</Link>
           <Link to="/class-management" onClick={toggleMenu}>Klassenverwaltung</Link>
           <Link to="/boss-management" onClick={toggleMenu}>Bosse</Link>
+          <Link to="/quest-management" onClick={toggleMenu}>Quests</Link>
         </div>
       )}
     </nav>

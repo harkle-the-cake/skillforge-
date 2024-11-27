@@ -88,7 +88,12 @@ html, body {
   border: 2px solid #333;
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.7); /* Leuchteffekt in Cyan */
-  overflow: hidden;
+  maxHeight: '600px';
+  width:'100%';
+  overflowY: 'auto';
+  backgroundColor: '#555';
+  color: '#fff';
+  flexGrow: 1;
 }
 
 /* Scrollbalken für die Tabelle */

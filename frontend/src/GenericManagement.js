@@ -25,6 +25,7 @@ const GenericManagement = ({
   columns,
   title,
   ViewModalComponent,
+  disableAddButton = false, // Neue Prop
   customHandleSave = null, // Neue Prop für benutzerdefinierte handleSave-Funktion
 }) => {
   const [data, setData] = useState([]);
@@ -201,23 +202,22 @@ return (
           style={{ marginBottom: '20px' }}
         />
 
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleAdd}
-          startIcon={<img src={addIcon} alt="Add" style={{ width: '20px' }} />}
-          style={{ marginBottom: '20px' }}
-        >
-          Neu hinzufügen
-        </Button>
+         {/* "Hinzufügen"-Button nur anzeigen, wenn erlaubt */}
+        {!disableAddButton && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleAdd}
+            startIcon={<img src={addIcon} alt="Add" style={{ width: '20px' }} />}
+            style={{ marginBottom: '20px' }}
+          >
+            Neu hinzufügen
+          </Button>
+        )}
 
        <TableContainer
          component={Paper}
          className="custom-table-container" // Stil hinzufügen
-         style={{
-           maxHeight: '600px', // Maximale Höhe für Scrollen
-           overflowY: 'auto', // Vertikales Scrollen aktivieren
-         }}
        >
          <Table stickyHeader className="custom-table">
            <TableHead>

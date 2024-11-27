@@ -49,7 +49,7 @@ const ClassViewModal = ({
       setPreviewUrl(data.imageUrl ? `${API_URL}${data.imageUrl}` : null);
 
       // Levels sortiert nach levelNumber setzen
-      const sortedLevels = (data.levels || []).slice().sort((a, b) => a.levelNumber - b.levelNumber);
+      const sortedLevels = (data.classLevels || []).slice().sort((a, b) => a.levelNumber - b.levelNumber);
       setLevels(sortedLevels.map(level => ({ ...level, BossId: level.BossId || null })));
     }
   }, [data]);

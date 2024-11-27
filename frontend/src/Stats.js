@@ -4,6 +4,9 @@ import { Container, Typography, Grid, Paper, Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import useTokenCheck from './useTokenCheck'; // Importiere die Token-Check-Funktion
+import ClassSelection from './ClassSelection';
+import ClassStats from './ClassStats';
+
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 const IMAGE_URL = API_URL + "/images/";
@@ -99,29 +102,8 @@ const Stats = () => {
           </Paper>
         </Grid>
 
-        {/* Klassenbereich */}
-        <Grid item xs={12}>
-          <Typography variant="h4" gutterBottom>
-            Deine Klassen
-          </Typography>
-          <Paper style={{ padding: '20px', backgroundColor: '#555', color: '#fff' }}>
-            {userData.ClassProgresses && userData.ClassProgresses.length > 0 ? (
-              <Grid container spacing={2}>
-                {userData.ClassProgresses.map((classData) => (
-                  <Grid item xs={12} sm={6} md={4} key={classData.Class.className}>
-                    <Paper style={{ padding: '20px', backgroundColor: '#333', color: '#fff' }}>
-                      <Typography variant="h5">{classData.Class.className}</Typography>
-                      <Typography variant="h6">Level: {classData.level}</Typography>
-                      <Typography variant="h6">XP: {classData.xp}</Typography>
-                    </Paper>
-                  </Grid>
-                ))}
-              </Grid>
-            ) : (
-              <Typography variant="h6">Keine Klasse</Typography>
-            )}
-          </Paper>
-        </Grid>
+        <ClassStats token={token}/>
+
 
         {/* Ausrüstungsbereich */}
         <Grid item xs={12}>
