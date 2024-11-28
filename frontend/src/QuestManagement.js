@@ -10,8 +10,8 @@ const QuestManagement = ({ token }) => {
     { field: 'imageUrl', label: 'Bild', type: 'image' },
     { field: 'title', label: 'Name' },
     { field: 'description', label: 'Beschreibung' },
-    { field: 'xpReward', label: 'Beschreibung' },
-    { field: 'goldReward', label: 'Beschreibung' },
+    { field: 'xpReward', label: 'XP' },
+    { field: 'goldReward', label: 'Gold' },
   ];
 
   const fields = [

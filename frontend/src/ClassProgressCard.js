@@ -8,7 +8,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 const defaultImageClass = '/images/default-class.png';
 const defaultImageLevel = '/images/default-level.png';
 
-const ClassProgressCard = ({ classData, onLevelUp, onDelete, onCompleteQuest, token  }) => {
+const ClassProgressCard = ({ classData, onLevelUp, onDelete, token  }) => {
   const { Class, currentLevel, progress } = classData;
   const { classLevels } = Class;
   const progressID = classData.id;
@@ -37,7 +37,7 @@ const ClassProgressCard = ({ classData, onLevelUp, onDelete, onCompleteQuest, to
   return (
     <Paper
       style={{
-        height:'400px',
+        height:'450px',
         padding: '20px',
         backgroundColor: '#333',
         color: '#fff',
@@ -134,7 +134,7 @@ const ClassProgressCard = ({ classData, onLevelUp, onDelete, onCompleteQuest, to
         token={token}
         currentXP={classData.progress}
         maxXP={nextLevelXP}
-        style={{ marginTop: '20px' }}
+        onPrepareLevelUp={onLevelUp}
       />
     </Paper>
   );

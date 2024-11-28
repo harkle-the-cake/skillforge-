@@ -56,6 +56,12 @@ exports.getClassProgress = async (req, res) => {
             {
               model: Level,
               as: 'classLevels', // Stellt sicher, dass die Levels unter diesem Alias verfügbar sind
+              include: [
+                {
+                  model: Boss,
+                  as: 'boss', // Stellt sicher, dass die Bosse unter diesem Alias verfügbar sind
+                },
+              ],
             },
           ],
         },
@@ -68,6 +74,7 @@ exports.getClassProgress = async (req, res) => {
     res.status(500).json({ error: 'Fehler beim Abrufen des Klassenfortschritts' });
   }
 };
+
 
 
 exports.deleteClassProgress = async (req, res) => {
@@ -93,11 +100,16 @@ exports.deleteClassProgress = async (req, res) => {
     }
 };
 
-exports.levelUp = async (req, res) => {
+exports.prepareLevelUp = async (req, res) => {
   try {
-    const { classProgressId } = req.params;
+    const userIdFromToken = req.user.id; // ID aus dem JWT-Token
+    const { classId } = req.params;
 
-    const classProgress = await ClassProgress.findByPk(classProgressId, {
+    const classProgress = await ClassProgress.findOne({
+      where: {
+        ClassId: classId,
+        UserId: userIdFromToken
+      },
       include: [
         {
           model: Class,
@@ -106,7 +118,7 @@ exports.levelUp = async (req, res) => {
     });
 
     if (!classProgress) {
-      throw new Error('ClassProgress nicht gefunden');
+      throw new Error('Klassenfortschritt nicht gefunden');
     }
 
     const nextLevel = await Level.findOne({
@@ -142,7 +154,10 @@ exports.levelUp = async (req, res) => {
       imageUrl: '/images/default_quest_end.png', // Ein Standardbild
     };
 
-    res.json(boss);
+    res.json({
+      boss,
+      isPseudoBoss: !nextLevel.boss, // True, wenn kein Boss existiert
+    });
   } catch (error) {
     console.error('Fehler beim Level-Up:', error);
     res.status(500).json({ error: 'Fehler beim Level-Up' });

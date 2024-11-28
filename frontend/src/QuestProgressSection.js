@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-const QuestProgressSection = ({ classId, token, currentXP, maxXP }) => {
+const QuestProgressSection = ({ classId, token, currentXP, maxXP, onPrepareLevelUp }) => {
   const [quests, setQuests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -46,12 +46,30 @@ const QuestProgressSection = ({ classId, token, currentXP, maxXP }) => {
     }
   };
 
-  const calculateProgress = () => {
-    const completedXP = quests.reduce(
+  const calculateCompletedQuestXP = () => {
+    return quests.reduce(
       (sum, quest) => (quest.status === 'completed' ? sum + quest.Quest.xpReward : sum),
       0
     );
-    return ((currentXP + completedXP) / maxXP) * 100;
+  };
+
+  const handlePrepareLevelUp = async () => {
+      try {
+        const res = await axios.post(
+          `${API_URL}/api/class-progress/${classId}/prepare-level-up`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (onPrepareLevelUp && res.status === 200) {
+           onPrepareLevelUp(res.data, classId);
+        }
+
+      } catch (error) {
+        console.error('Fehler beim Vorbereiten des Level-Ups:', error);
+      }
   };
 
   const handleOpenModal = () => {
@@ -62,24 +80,18 @@ const QuestProgressSection = ({ classId, token, currentXP, maxXP }) => {
     setModalOpen(false);
   };
 
+  const totalXP = currentXP + calculateCompletedQuestXP();
+  const canPrepareLevelUp = totalXP >= maxXP;
+
   return (
     <>
-      <Paper style={{ padding: '20px', backgroundColor: '#333', color: '#fff' }}>
-        {/* Fortschrittsleiste */}
-        <Box display="flex" alignItems="center" marginBottom={1}>
-          <Typography style={{ minWidth: '60px' }}>{currentXP} XP</Typography>
-          <Box flex={1} mx={2}>
-            <LinearProgress
-              variant="determinate"
-              value={calculateProgress()}
-              style={{ height: '10px', borderRadius: '5px', backgroundColor: '#444' }}
-            />
-          </Box>
-          <Typography style={{ minWidth: '80px', textAlign: 'right' }}>{maxXP} XP</Typography>
+      <Paper style={{ padding: '20px', backgroundColor: '#333', color: '#fff', marginTop:'20px' }}>
+        {/* Überschrift und Button */}
+        <Box display="flex" alignItems="center" justifyContent="space-between" marginBottom={1}>
+          <Typography variant="h6">Quest-Fortschritt</Typography>
           <Button
             onClick={handleOpenModal}
             style={{
-              marginLeft: '10px',
               backgroundColor: '#4caf50',
               color: '#fff',
               borderRadius: '5px',
@@ -88,6 +100,32 @@ const QuestProgressSection = ({ classId, token, currentXP, maxXP }) => {
           >
             Quests ansehen
           </Button>
+        </Box>
+
+        {/* Fortschrittsanzeige oder Button */}
+        <Box display="flex" alignItems="center" marginBottom={1}>
+          {canPrepareLevelUp ? (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handlePrepareLevelUp}
+              style={{ marginLeft: '10px', flexGrow: 1 }}
+            >
+              Level-Up vorbereiten
+            </Button>
+          ) : (
+            <>
+              <Typography style={{ minWidth: '60px' }}>{totalXP} XP</Typography>
+              <Box flex={1} mx={2}>
+                <LinearProgress
+                  variant="determinate"
+                  value={(totalXP / maxXP) * 100}
+                  style={{ height: '10px', borderRadius: '5px', backgroundColor: '#444' }}
+                />
+              </Box>
+              <Typography style={{ minWidth: '80px', textAlign: 'right' }}>{maxXP} XP</Typography>
+            </>
+          )}
         </Box>
       </Paper>
 

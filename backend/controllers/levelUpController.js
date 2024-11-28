@@ -20,7 +20,7 @@ exports.getPendingLevelUps = async (req, res) => {
           include: [
             {
               model: Level,
-              as: 'levels', // Assoziation "levels" direkt angeben
+              as: 'classLevels', // Stellt sicher, dass die Levels unter diesem Alias verfügbar sind
               attributes: ['levelNumber', 'levelName'], // Aktuelle und nächste Level
             },
           ],

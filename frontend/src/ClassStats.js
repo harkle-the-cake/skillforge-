@@ -17,18 +17,54 @@ const ClassStats = ({ token }) => {
   const [levelingUpClass, setLevelingUpClass] = useState(null);
 
   // Klassenfortschritt abrufen
-  const fetchClassProgresses = async () => {
-    try {
-      const res = await axios.get(`${API_URL}/api/class-progress`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setClassProgresses(res.data);
-    } catch (error) {
-      console.error('Fehler beim Abrufen des Klassenfortschritts:', error);
-    } finally {
-      setLoading(false);
+const fetchClassProgresses = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/api/class-progress`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const progresses = res.data;
+
+    // Überprüfen, ob eine Klasse im "leveling-up"-Status ist
+    const levelingUpClassProgress = progresses.find((progress) => progress.status === 'leveling-up');
+
+    console.log(levelingUpClassProgress);
+
+    if (levelingUpClassProgress) {
+      setLevelingUpClass(levelingUpClassProgress.ClassId);
+      console.log(levelingUpClassProgress);
+
+      // Boss-Daten für das nächste Level abrufen, falls erforderlich
+      if (levelingUpClassProgress.Class && levelingUpClassProgress.Class.classLevels) {
+        const nextLevel = levelingUpClassProgress.Class.classLevels.find(
+          (level) => level.levelNumber > levelingUpClassProgress.currentLevel
+        );
+
+        console.log("boss???",  levelingUpClassProgress.Class.classLevels);
+
+        const boss = nextLevel?.boss || {
+          id: 'pseudo-boss',
+          name: 'Quests einreichen',
+          description: 'Reiche deine Quests ein. Präsentiere deinem Questgeber deine Ergebnisse.',
+          imageUrl: '/images/default_quest_end.png',
+        };
+
+        setActiveBoss(boss);
+      }
+      else
+      {
+        console.log("no class or levels defined.");
+      }
     }
-  };
+
+    setClassProgresses(progresses);
+  } catch (error) {
+    console.error('Fehler beim Abrufen des Klassenfortschritts:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchClassProgresses();
@@ -38,20 +74,27 @@ const ClassStats = ({ token }) => {
     fetchClassProgresses(); // Reload the class progresses after a new class is added
   };
 
- const handleLevelUp = async (classProgressId) => {
-   try {
-     const response = await axios.put(
-       `${API_URL}/api/class-progress/${classProgressId}/level-up`,
-       {},
-       { headers: { Authorization: `Bearer ${token}` } }
-     );
-     setActiveBoss(response.data); // Boss-Info setzen
-     setLevelingUpClass(classProgressId); // Die ID der levelnden Klasse speichern
-     console.log(activeBoss);
-   } catch (error) {
-     console.error('Fehler beim Level-Up:', error);
-   }
- };
+const handleLevelUp = async (response, classId) => {
+  try {
+    setActiveBoss(response.boss); // Boss-Info setzen
+    setLevelingUpClass(classId); // Die ID der levelnden Klasse speichern
+
+    //console.log('Boss gesetzt:', response.boss); // Debugging
+    //console.log('Leveling-Up-Class:', classId); // Debugging
+  } catch (error) {
+    console.error('Fehler beim Level-Up:', error);
+  }
+};
+
+  useEffect(() => {
+      if (activeBoss && levelingUpClass) {
+        console.log('UI aktualisiert: Boss und Leveling-Up-Class sind gesetzt.', {
+          activeBoss,
+          levelingUpClass,
+        });
+      }
+  }, [activeBoss, levelingUpClass]);
+
 
     const handleDeleteClass = (classId) => {
       setClassToDelete(classId);
@@ -70,39 +113,25 @@ const ClassStats = ({ token }) => {
       }
     };
 
-  const handleCompleteQuest = async (questId) => {
-    try {
-      await axios.put(`${API_URL}/api/quest-progress/${questId}`, { status: 'completed' }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      fetchClassProgresses(); // Aktualisiere die Daten nach dem Abschluss der Quest
-    } catch (error) {
-      console.error('Fehler beim Abschließen der Quest:', error);
-    }
-  };
-
-
   const handleCloseDeleteDialog = () => {
     setClassToDelete(null);
     setDeleteDialogOpen(false);
   };
 
-  const handleBossDefeat = async () => {
-      try {
-        await axios.put(
-          `${API_URL}/api/class-progress/${levelingUpClass}/complete-level-up`,
-          {},
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setActiveBoss(null);
-        setLevelingUpClass(null);
-        fetchClassProgresses(); // Aktualisiere die Klassenfortschritte
-      } catch (error) {
-        console.error('Fehler beim Abschließen des Level-Ups:', error);
-      }
-  };
-
-  console.log(classProgresses);
+const handleBossDefeat = async () => {
+  try {
+    await axios.put(
+      `${API_URL}/api/class-progress/${levelingUpClass}/complete-level-up`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    setActiveBoss(null); // Boss zurücksetzen
+    setLevelingUpClass(null); // Leveling-Up-Class zurücksetzen
+    await fetchClassProgresses(); // Daten neu laden
+  } catch (error) {
+    console.error('Fehler beim Abschließen des Level-Ups:', error);
+  }
+};
 
   return (
     <Grid item xs={12}>
@@ -114,28 +143,30 @@ const ClassStats = ({ token }) => {
           <Typography variant="h6">Laden...</Typography>
         ) : classProgresses && classProgresses.length > 0 ? (
           <Grid container spacing={2}>
-            {classProgresses.map((classData) => (
-                <div key={classData.id} style={{ margin: '5px'}}>
-                {
-                  classData.id === levelingUpClass && activeBoss ? (
-                    <BossCard
-                        key={activeBoss.id}
-                        boss={activeBoss}
-                        onDefeat={handleBossDefeat}
-                    />
-                  ) : (
-                    <ClassProgressCard
-                      token={token}
-                      key={classData.id}
-                      classData={classData}
-                      onLevelUp={(id) => handleLevelUp(id)}
-                      onDelete={handleDeleteClass} // Das Löschen wird an ClassStats übergeben
-                      onCompleteQuest={handleCompleteQuest}
-                    />
-                  )
-                }
-                </div>
-            ))}
+           {classProgresses.map((classData) => {
+             //console.log('ClassData ID:', classData.ClassId); // Debug-Ausgabe außerhalb der JSX
+             //console.log('Leveling Up ID:', levelingUpClass); // Debug-Ausgabe außerhalb der JSX
+             //console.log('Active Boss:', activeBoss);
+             return (
+               <div key={classData.id} style={{ margin: '5px' }}>
+                 {String(classData.ClassId) === String(levelingUpClass) && activeBoss ? (
+                   <BossCard
+                     key={activeBoss.id}
+                     boss={activeBoss}
+                     onDefeat={handleBossDefeat}
+                   />
+                 ) : (
+                   <ClassProgressCard
+                     token={token}
+                     key={classData.id}
+                     classData={classData}
+                     onLevelUp={handleLevelUp}
+                     onDelete={handleDeleteClass} // Das Löschen wird an ClassStats übergeben
+                   />
+                 )}
+               </div>
+             );
+           })}
           </Grid>
         ) : (
           <Typography variant="h6">Keine Klasse</Typography>

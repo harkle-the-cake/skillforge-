@@ -114,10 +114,10 @@ const LevelUpManagement = ({ token }) => {
                 </TableRow>
               ) : filteredLevelUps.length > 0 ? (
                 filteredLevelUps.map((levelUp) => {
-                  const currentLevel = levelUp.Class.levels.find(
+                  const currentLevel = levelUp.Class.classLevels.find(
                     (l) => l.levelNumber === levelUp.currentLevel
                   );
-                  const nextLevel = levelUp.Class.levels.find(
+                  const nextLevel = levelUp.Class.classLevels.find(
                     (l) => l.levelNumber > levelUp.currentLevel
                   );
 
