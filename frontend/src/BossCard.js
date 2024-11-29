@@ -1,43 +1,67 @@
-import React from 'react';
-import { Paper, Typography, Button } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, Button, Paper } from '@mui/material';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const BossCard = ({ boss, onDefeat }) => {
-  if (!boss) {
-    return null;
-  }
+  const [imageError, setImageError] = useState(false);
+
+  const bossImage = imageError
+    ? '/images/default-boss.png' // Standardbild für den Boss
+    : boss.imageUrl
+    ? `${API_URL}${boss.imageUrl}`
+    : '/images/default-boss.png';
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
 
   return (
     <Paper
       style={{
-        height:'400px',
         padding: '20px',
         backgroundColor: '#333',
         color: '#fff',
         borderRadius: '10px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
         textAlign: 'center',
-        maxWidth: '400px'
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
       }}
     >
-      <Typography variant="h4" gutterBottom>
-        {boss.name}
-      </Typography>
+      {/* Boss-Bild */}
       <img
-        src={boss.imageUrl ? `${API_URL}${boss.imageUrl}` : '/images/default-boss.png'}
-        alt={boss.name}
+        src={bossImage}
+        alt={boss.name || 'Unbekannter Boss'}
+        onError={handleImageError} // Fallback auf Default-Bild bei Fehler
         style={{
-          width: '100%',
-          maxHeight: '200px',
-          objectFit: 'contain',
+          width: '80%',
+          height: '200px',
+          objectFit: 'cover',
           borderRadius: '10px',
-          marginBottom: '20px',
+          marginBottom: '10px',
         }}
       />
-      <Typography variant="body1" style={{ marginBottom: '20px' }}>
-        {boss.description}
+
+      {/* Boss-Details */}
+      <Typography variant="h5" style={{ marginBottom: '10px' }}>
+        {boss.name || 'Unbekannter Boss'}
       </Typography>
+      <Typography variant="body1" style={{ marginBottom: '20px' }}>
+        {boss.description || 'Keine Beschreibung verfügbar.'}
+      </Typography>
+
+      {/* Boss-Interaktion */}
+      {onDefeat && (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={onDefeat}
+          style={{
+            marginTop: '10px',
+          }}
+        >
+          Boss besiegen
+        </Button>
+      )}
     </Paper>
   );
 };

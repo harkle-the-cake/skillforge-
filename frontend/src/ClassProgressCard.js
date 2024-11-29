@@ -22,8 +22,8 @@ const ClassProgressCard = ({ classData, onLevelUp, onDelete, token  }) => {
   const current = classLevels.find((level) => level.levelNumber === currentLevel) || null;
   const next = classLevels.find((level) => level.levelNumber > currentLevel) || null;
   const levelUpEnabled = (next && progress>=next.requiredXP)? true : false;
-  const nextLevelId = next.id;
-  const nextLevelXP = next.requiredXP;
+  const nextLevelId = next?.id||-1;
+  const nextLevelXP = next?.requiredXP||0;
 
   const currentLevelImage = current ? current.imageUrl : defaultImageLevel;
   const nextLevelImage = next ? next.imageUrl : defaultImageLevel;

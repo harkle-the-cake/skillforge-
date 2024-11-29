@@ -3,6 +3,7 @@ import { Grid, Typography, Paper, Button, Dialog, DialogTitle, DialogContent, Di
 import axios from 'axios';
 import ClassSelection from './ClassSelection'; // Component for adding new classes
 import ClassProgressCard from './ClassProgressCard'; // Component for adding new classes
+import ClassCard from './ClassCard'; // Component for adding new classes
 import BossCard from './BossCard'; // Import der BossCard
 
 
@@ -28,11 +29,8 @@ const fetchClassProgresses = async () => {
     // Überprüfen, ob eine Klasse im "leveling-up"-Status ist
     const levelingUpClassProgress = progresses.find((progress) => progress.status === 'leveling-up');
 
-    console.log(levelingUpClassProgress);
-
     if (levelingUpClassProgress) {
       setLevelingUpClass(levelingUpClassProgress.ClassId);
-      console.log(levelingUpClassProgress);
 
       // Boss-Daten für das nächste Level abrufen, falls erforderlich
       if (levelingUpClassProgress.Class && levelingUpClassProgress.Class.classLevels) {
@@ -40,20 +38,20 @@ const fetchClassProgresses = async () => {
           (level) => level.levelNumber > levelingUpClassProgress.currentLevel
         );
 
-        console.log("boss???",  levelingUpClassProgress.Class.classLevels);
-
-        const boss = nextLevel?.boss || {
-          id: 'pseudo-boss',
-          name: 'Quests einreichen',
-          description: 'Reiche deine Quests ein. Präsentiere deinem Questgeber deine Ergebnisse.',
-          imageUrl: '/images/default_quest_end.png',
-        };
-
-        setActiveBoss(boss);
-      }
-      else
-      {
-        console.log("no class or levels defined.");
+        if (nextLevel) {
+          const boss = nextLevel.boss || {
+            id: 'pseudo-boss',
+            name: 'Quests einreichen',
+            description: 'Reiche deine Quests ein. Präsentiere deinem Questgeber deine Ergebnisse.',
+            imageUrl: '/images/default_quest_end.png',
+          };
+          setActiveBoss(boss);
+        } else {
+          setActiveBoss(null);
+          setLevelingUpClass(null); // Leveling-Up-Class zurücksetzen
+        }
+      } else {
+        console.log("Keine Klasse oder Levels definiert.");
       }
     }
 
@@ -64,6 +62,7 @@ const fetchClassProgresses = async () => {
     setLoading(false);
   }
 };
+
 
 
   useEffect(() => {
@@ -143,30 +142,16 @@ const handleBossDefeat = async () => {
           <Typography variant="h6">Laden...</Typography>
         ) : classProgresses && classProgresses.length > 0 ? (
           <Grid container spacing={2}>
-           {classProgresses.map((classData) => {
-             //console.log('ClassData ID:', classData.ClassId); // Debug-Ausgabe außerhalb der JSX
-             //console.log('Leveling Up ID:', levelingUpClass); // Debug-Ausgabe außerhalb der JSX
-             //console.log('Active Boss:', activeBoss);
-             return (
-               <div key={classData.id} style={{ margin: '5px' }}>
-                 {String(classData.ClassId) === String(levelingUpClass) && activeBoss ? (
-                   <BossCard
-                     key={activeBoss.id}
-                     boss={activeBoss}
-                     onDefeat={handleBossDefeat}
-                   />
-                 ) : (
-                   <ClassProgressCard
-                     token={token}
-                     key={classData.id}
-                     classData={classData}
-                     onLevelUp={handleLevelUp}
-                     onDelete={handleDeleteClass} // Das Löschen wird an ClassStats übergeben
-                   />
-                 )}
-               </div>
-             );
-           })}
+           {classProgresses.map((classData) => (
+             <ClassCard
+               key={classData.id}
+               classData={classData}
+               token={token}
+               onLevelUp={handleLevelUp}
+               onDelete={handleDeleteClass}
+               boss={activeBoss}
+             />
+           ))}
           </Grid>
         ) : (
           <Typography variant="h6">Keine Klasse</Typography>
