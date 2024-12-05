@@ -27,18 +27,17 @@ const QuestProgressSection = ({ classId, token, currentXP, maxXP, onPrepareLevel
     if (classId) fetchQuests();
   }, [classId, token]);
 
-  const handleCompleteQuest = async (questId) => {
+  const handleCompleteQuest = async (questProgressId) => {
     try {
       await axios.put(
-        `${API_URL}/api/quest-progress/${questId}`,
-        { status: 'completed' },
+        `${API_URL}/api/quest-progress/complete/${questProgressId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setQuests((prev) =>
-        prev.map((quest) =>
-          quest.QuestId === questId ? { ...quest, status: 'completed' } : quest
+      setQuests((quests) =>
+        quests.map((quest) =>
+          quest.Id === questProgressId ? { ...quest, status: 'completed' } : quest
         )
       );
     } catch (error) {
@@ -157,7 +156,7 @@ const QuestProgressSection = ({ classId, token, currentXP, maxXP, onPrepareLevel
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => handleCompleteQuest(quest.QuestId)}
+                    onClick={() => handleCompleteQuest(quest.Id)}
                   >
                     Abschließen
                   </Button>

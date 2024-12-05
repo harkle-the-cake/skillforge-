@@ -8,7 +8,7 @@ const auth = require('../middleware/auth'); // Importiere die Middleware
 router.get('/', auth, questProgressController.getQuestProgressByUser);
 
 // Aktualisiere den Status eines Quest-Progress
-router.put('/:id', auth, questProgressController.updateQuestProgress);
+router.put('/:id', checkRole('Ausbilder'), questProgressController.updateQuestProgress);
 
 // Erstelle einen neuen Quest-Progress
 router.post('/', auth, questProgressController.createQuestProgress);
@@ -17,17 +17,15 @@ router.post('/', auth, questProgressController.createQuestProgress);
 router.delete('/:id', auth, questProgressController.deleteQuestProgress);
 
 // Hole oder erstelle Quest-Progress für das aktuelle Level
-router.get(
-  '/current-level/:classId',
-  auth,
-  questProgressController.getOrCreateQuestProgressForCurrentLevel
-);
+router.get('/current-level/:classId', auth, questProgressController.getOrCreateQuestProgressForCurrentLevel);
 
 // Hole oder erstelle Quest-Progress für das nächste Level
-router.get(
-  '/next-level/:classId',
-  auth,
-  questProgressController.getNextLevelQuestProgress
-);
+router.get('/next-level/:classId',auth, questProgressController.getNextLevelQuestProgress);
+
+// Quest abschließen
+router.put('/complete/:questProgressId', checkRole('Ausbilder'), questProgressController.completeQuest );
+
+// Quest bestätigen
+router.put('/confirm/:questProgressId', checkRole('Ausbilder'), questProgressController.confirmQuest );
 
 module.exports = router;

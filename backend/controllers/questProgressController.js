@@ -47,6 +47,33 @@ exports.updateQuestProgress = async (req, res) => {
   }
 };
 
+// Aktualisiere den Status eines Quest-Progress
+exports.completeQuest = async (req, res) => {
+  try {
+    const {questProgressIdid } = req.params;
+
+    const questProgress = await QuestProgress.findByPk(questProgressIdid);
+
+    if (!questProgress) {
+      return res.status(404).json({ error: 'Quest-Progress nicht gefunden.' });
+    }
+
+    // Überprüfen, ob die Quest bereits abgeschlossen wurde
+    if (questProgress.status === 'completed') {
+      return res.status(400).json({ error: 'Quest wurde bereits bestätigt.' });
+    }
+
+    questProgress.status = "completed";
+
+    await questProgress.save();
+
+    res.json(questProgress);
+  } catch (error) {
+    console.error('Fehler beim Aktualisieren des Quest-Progress:', error);
+    res.status(500).json({ error: 'Fehler beim Aktualisieren des Quest-Progress.' });
+  }
+};
+
 // Erstelle einen neuen Quest-Progress für einen Benutzer
 exports.createQuestProgress = async (req, res) => {
   try {
@@ -217,5 +244,45 @@ exports.getNextLevelQuestProgress = async (req, res) => {
   } catch (error) {
     console.error('Fehler beim Laden der QuestProgress:', error);
     res.status(500).json({ error: 'Fehler beim Laden der QuestProgress.' });
+  }
+};
+
+exports.confirmQuest = async (req, res) => {
+  const { questProgressId } = req.params;
+
+  try {
+    // QuestProgress-Eintrag finden
+    const questProgress = await QuestProgress.findByPk(questProgressId, {
+      include: {
+        model: Quest,
+        attributes: ['xpReward', 'goldReward'], // Hole die Rewards der Quest
+      },
+    });
+
+    if (!questProgress) {
+      return res.status(404).json({ error: 'QuestProgress nicht gefunden.' });
+    }
+
+    // Überprüfen, ob die Quest bereits abgeschlossen wurde
+    if (questProgress.status === 'confirmed') {
+      return res.status(400).json({ error: 'Quest wurde bereits bestätigt.' });
+    }
+
+    // Rewards aus der zugehörigen Quest setzen
+    questProgress.xpEarned = questProgress.Quest.xpReward;
+    questProgress.goldEarned = questProgress.Quest.goldReward;
+    questProgress.status = 'confirmed'; // Status auf abgeschlossen setzen
+
+    await questProgress.save();
+
+    res.json({
+      id: questProgress.id,
+      status: questProgress.status,
+      xpEarned: questProgress.xpEarned,
+      goldEarned: questProgress.goldEarned,
+    });
+  } catch (error) {
+    console.error('Fehler beim Bestätigen der Quest:', error);
+    res.status(500).json({ error: 'Fehler beim Bestätigen der Quest.' });
   }
 };

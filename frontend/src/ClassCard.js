@@ -10,7 +10,7 @@ const ClassCard = ({ classData, token, onDelete, onLevelUp, boss, onDefeat }) =>
   const { Class: classInfo, progress: currentXP, status } = classData;
   const isLevelingUp = status === 'leveling-up';
 
-  console.log("CLASS CARD", classData, isLevelingUp)
+  //console.log("CLASS CARD", classData, isLevelingUp)
 
   const classImage = imageError
     ? '/images/default-class.png' // Standardbild, wenn das Bild nicht geladen werden kann
@@ -109,7 +109,9 @@ const ClassCard = ({ classData, token, onDelete, onLevelUp, boss, onDefeat }) =>
             // Boss-Ansicht, wenn Level-Up aktiv ist
             <BossCard
               boss={boss}
-              onDefeat={onDefeat}
+              classId={classData.ClassId}
+              onFight={() => onDefeat(classData.ClassId)}
+              token={token}
             />
           ) : (
             // Standard-Rückseite mit Klassenfortschritt

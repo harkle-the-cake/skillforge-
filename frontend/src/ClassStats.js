@@ -150,6 +150,7 @@ const handleBossDefeat = async () => {
                onLevelUp={handleLevelUp}
                onDelete={handleDeleteClass}
                boss={activeBoss}
+               onDefeat={handleBossDefeat}
              />
            ))}
           </Grid>
